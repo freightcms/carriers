@@ -1,4 +1,4 @@
-package main
+package models
 
 // carrier identification codes enum
 // see https://kb.freightcms.com/carriers/ for more information
