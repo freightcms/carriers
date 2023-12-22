@@ -8,7 +8,7 @@ func health(c echo.Context) error {
 	return c.String(200, "OK")
 }
 
-func createApp() *echo.Echo {
+func CreateApp() *echo.Echo {
 	e := echo.New()
 
 	// Routes

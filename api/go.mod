@@ -1,4 +1,4 @@
-module github.com/freightcms.com/carriers/api
+module github.com/freightcms/carriers/api
 
 go 1.21.5
 
