@@ -23,6 +23,8 @@ Collection of Data Transfer Objects (DTOs) that represent the different types of
 touch .env
 ```
 
+**example**
+
 ```text
 LOG_LEVEL=INFO
 DEBUG=true
@@ -30,13 +32,13 @@ HOST=0.0.0.0
 PORT=8080
 ```
 
-4. make sure you have all the dependencies installed
+5. make sure you have all the dependencies installed
 
 ```bash
 go mod tidy
 ```
 
-5. run the project
+6. run the project
 
 ```bash
 go run main.go
