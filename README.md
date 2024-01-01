@@ -56,3 +56,4 @@ Database models and optionally API schema models that can be used for requests.
 
 - [Freight KB Carriers](https://kb.freightcms.com/carriers/)
 - [mongodb driver](https://github.com/mongodb/mongo-go-driver)
+- [godot](https://golangbyexample.com/load-env-fiie-golang/)
