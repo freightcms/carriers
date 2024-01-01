@@ -84,3 +84,24 @@ func (s *CarrierService) GetCarriers() ([]*schemas.CarrierSchema, error) {
 
 	return carrierSlice, nil
 }
+
+// UpdateCarrier updates a carrier.
+func (s *CarrierService) UpdateCarrier(schema *schemas.CarrierSchema) (*schemas.CarrierSchema, error) {
+	model := models.FreightCarrier{
+		ID:   schema.ID,
+		Name: schema.Name,
+		DBA:  schema.DBA,
+	}
+	carrier, err := s.db.UpdateCarrier(&model)
+	if err != nil {
+		return nil, err
+	}
+
+	return &schemas.CarrierSchema{
+		ID: carrier.ID,
+		CreateCarrierSchema: schemas.CreateCarrierSchema{
+			Name: carrier.Name,
+			DBA:  carrier.DBA,
+		},
+	}, nil
+}
