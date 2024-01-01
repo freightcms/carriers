@@ -47,7 +47,7 @@ func CreateApp(service *CarrierService) *echo.Echo {
 
 	// Routes
 	e.GET("/", health)
-	e.POST("/carriers", create, ServiceMiddleware(*service))
+	e.POST("/carriers", create, ServiceMiddleware(service))
 
 	return e
 }
