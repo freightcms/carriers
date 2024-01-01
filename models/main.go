@@ -15,38 +15,46 @@ const (
 )
 
 type CarrierIdnetifycationCode struct {
-	id   string
-	code string
+	ID   string
+	Code string
 }
 
 type CarrierIntlAddress struct {
-	id              string
-	address1        string
-	address2        string
-	address3        string
-	region          string
-	stateOrProvince string
-	zipOrPostalCode string
-	country         string
+	// ID is the unique identifier for the address
+	ID string
+	// Address1 is the street address
+	Address1 string
+	// Address2 is the building, etc.
+	Address2 string
+	// Address3 is the floor, suite, etc.
+	Address3 string
+	// Region is the state
+	Region string
+	// Locality is the city
+	Locality string
+	// ZipOrPostalCode is the zip code
+	ZipOrPostalCode string
+	// Country is the country code
+	Country string
 }
 
 type CarrierContact struct {
-	id                     string
-	name                   string
-	email                  string
-	phone                  string
-	fax                    string
-	preferredContactMethod string
-	reference              string
+	ID                     string
+	Name                   string
+	Email                  string
+	Phone                  string
+	Fax                    string
+	PreferredContactMethod string
+	Reference              string
 }
 
 type FreightCarrier struct {
-	id                 string
-	name               string
-	dba                string
-	website            string
-	contact            CarrierContact
-	mailingAddress     CarrierIntlAddress
-	billingAddress     CarrierIntlAddress
-	identificationCode []CarrierIdnetifycationCode
+	ID                 string
+	Name               string
+	DBA                string
+	Website            string
+	Contact            CarrierContact
+	MailingAddress     CarrierIntlAddress
+	BillingAddress     CarrierIntlAddress
+	IdentificationCode []CarrierIdnetifycationCode
 }

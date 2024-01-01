@@ -4,11 +4,12 @@ import (
 	"net/http"
 
 	"github.com/freightcms/carriers/schemas"
+	"github.com/freightcms/carriers/services"
 	"github.com/labstack/echo/v4"
 )
 
 // CarrierService is the interface that provides carrier methods.
-type CarrierService interface {
+type Service interface {
 	// CreateCarrier Creates a new carrier and returns the created carrier. If the carrier
 	// could not be created, an error is returned.
 	CreateCarrier(schema *schemas.CreateCarrierSchema) (*schemas.CarrierSchema, error)
@@ -23,7 +24,7 @@ type CarrierService interface {
 }
 
 // ServiceMiddleware injects the carrier service into the context
-func ServiceMiddleware(service *CarrierService) echo.MiddlewareFunc {
+func ServiceMiddleware(service Service) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			c.Set("carrierService", service)
@@ -37,7 +38,7 @@ func health(c echo.Context) error {
 }
 
 func create(c echo.Context) error {
-	service, ok := c.Get("carrierService").(CarrierService)
+	service, ok := c.Get("carrierService").(services.CarrierService)
 	if !ok {
 		c.Logger().Debug("Could not get carrier service")
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
@@ -54,7 +55,7 @@ func create(c echo.Context) error {
 	return c.JSON(http.StatusOK, &model)
 }
 
-func CreateApp(service *CarrierService) *echo.Echo {
+func CreateApp(service Service) *echo.Echo {
 	e := echo.New()
 
 	// Routes

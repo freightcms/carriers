@@ -13,6 +13,6 @@ type CreateCarrierSchema struct {
 }
 
 type CarrierSchema struct {
-	ID string `json:"id"`
 	CreateCarrierSchema
+	ID string `json:"id"`
 }
