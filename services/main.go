@@ -105,3 +105,8 @@ func (s *CarrierService) UpdateCarrier(schema *schemas.CarrierSchema) (*schemas.
 		},
 	}, nil
 }
+
+// DeleteCarrier deletes a carrier.
+func (s *CarrierService) DeleteCarrier(id string) error {
+	return s.db.DeleteCarrier(id)
+}
