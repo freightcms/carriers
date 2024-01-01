@@ -1,4 +1,4 @@
-package api
+package schemas
 
 import "github.com/freightcms/carriers/models"
 
@@ -10,4 +10,9 @@ type CarrierIdentifyingCodes struct {
 type CreateCarrierSchema struct {
 	Name string `json:"name"`
 	DBA  string `json:"dba"`
+}
+
+type CarrierSchema struct {
+	ID string `json:"id"`
+	CreateCarrierSchema
 }
