@@ -8,13 +8,13 @@ Collection of Data Transfer Objects (DTOs) that represent the different types of
 2. clone your respository
 
 ```bash
-`git clone https://github.com/freightcms/carriers`
+git clone https://github.com/freightcms/carriers
 ```
 
 3. move into the cloned directory
 
 ```bash
-`cd ./carriers`
+cd ./carriers
 ```
 
 4. Create an `.env` file in the root fo the directory
