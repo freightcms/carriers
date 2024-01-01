@@ -5,6 +5,7 @@ go 1.21.5
 require github.com/freightcms/carriers/api v0.0.0-20231222170247-7cc26d917d92
 
 require (
+	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/labstack/echo/v4 v4.11.4 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
