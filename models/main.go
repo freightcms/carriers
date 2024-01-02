@@ -48,7 +48,7 @@ type CarrierContact struct {
 	Reference              string
 }
 
-type FreightCarrier struct {
+type Carrier struct {
 	ID                 string
 	Name               string
 	DBA                string

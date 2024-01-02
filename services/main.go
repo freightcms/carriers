@@ -7,13 +7,13 @@ import (
 
 type CarrierDb interface {
 	// GetCarrier returns a carrier by id.
-	GetCarrier(id string) (*models.FreightCarrier, error)
+	GetCarrier(id string) (*models.Carrier, error)
 	// GetCarriers returns all carriers.
-	GetCarriers() ([]*models.FreightCarrier, error)
+	GetCarriers() ([]*models.Carrier, error)
 	// CreateCarrier creates a new carrier.
-	CreateCarrier(carrier *models.FreightCarrier) (*models.FreightCarrier, error)
+	CreateCarrier(carrier *models.Carrier) (*models.Carrier, error)
 	// UpdateCarrier updates a carrier.
-	UpdateCarrier(carrier *models.FreightCarrier) (*models.FreightCarrier, error)
+	UpdateCarrier(carrier *models.Carrier) (*models.Carrier, error)
 	// DeleteCarrier deletes a carrier.
 	DeleteCarrier(id string) error
 }
@@ -30,7 +30,7 @@ func NewCarrierService(db CarrierDb) *CarrierService {
 // CreateCarrier Creates a new carrier and returns the created carrier. If the carrier
 // could not be created, an error is returned.
 func (s *CarrierService) CreateCarrier(schema *schemas.CreateCarrierSchema) (*schemas.CarrierSchema, error) {
-	model := models.FreightCarrier{
+	model := models.Carrier{
 		Name: schema.Name,
 		DBA:  schema.DBA,
 	}
@@ -87,7 +87,7 @@ func (s *CarrierService) GetCarriers() ([]*schemas.CarrierSchema, error) {
 
 // UpdateCarrier updates a carrier.
 func (s *CarrierService) UpdateCarrier(schema *schemas.CarrierSchema) (*schemas.CarrierSchema, error) {
-	model := models.FreightCarrier{
+	model := models.Carrier{
 		ID:   schema.ID,
 		Name: schema.Name,
 		DBA:  schema.DBA,
