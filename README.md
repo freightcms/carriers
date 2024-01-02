@@ -7,42 +7,42 @@ Collection of Data Transfer Objects (DTOs) that represent the different types of
 1. Ensure you have the version of Go pinned in the `go.mode` file
 2. clone your respository
 
-```bash
-git clone https://github.com/freightcms/carriers
-```
+    ```bash
+    git clone https://github.com/freightcms/carriers
+    ```
 
 3. move into the cloned directory
 
-```bash
-cd ./carriers
-```
+    ```bash
+    cd ./carriers
+    ```
 
 4. Create an `.env` file in the root fo the directory
 
-```bash
-touch .env
-```
+    ```bash
+    touch .env
+    ```
 
-**example**
+    **example**
 
-```text
-LOG_LEVEL=INFO
-DEBUG=true
-HOST=0.0.0.0
-PORT=8080
-```
+    ```text
+    LOG_LEVEL=INFO
+    DEBUG=true
+    HOST=0.0.0.0
+    PORT=8080
+    ```
 
 5. make sure you have all the dependencies installed
 
-```bash
-go mod tidy
-```
+    ```bash
+    go mod tidy
+    ```
 
 6. run the project
 
-```bash
-go run main.go
-```
+    ```bash
+    go run main.go
+    ```
 
 ## Projects
 
