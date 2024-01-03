@@ -3,8 +3,8 @@ package schemas
 import "github.com/freightcms/carriers/models"
 
 type CarrierIdentifyingCodes struct {
-	code  models.CarrierIdentifyingCode
-	value string
+	Code  models.CarrierIdentifyingCode
+	Value string
 }
 
 type CreateCarrierSchema struct {
