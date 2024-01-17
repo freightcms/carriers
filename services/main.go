@@ -1,29 +1,32 @@
 package services
 
 import (
+	"github.com/freightcms/carriers/db"
 	"github.com/freightcms/carriers/models"
 	"github.com/freightcms/carriers/schemas"
 )
 
-type CarrierDb interface {
+// CarrierService is the interface that provides carrier methods.
+type Service interface {
+	// CreateCarrier Creates a new carrier and returns the created carrier. If the carrier
+	// could not be created, an error is returned.
+	CreateCarrier(schema *schemas.CreateCarrierSchema) (*schemas.CarrierSchema, error)
 	// GetCarrier returns a carrier by id.
-	GetCarrier(id string) (*models.FreightCarrier, error)
+	GetCarrier(id string) (*schemas.CarrierSchema, error)
 	// GetCarriers returns all carriers.
-	GetCarriers() ([]*models.FreightCarrier, error)
-	// CreateCarrier creates a new carrier.
-	CreateCarrier(carrier *models.FreightCarrier) (*models.FreightCarrier, error)
+	GetCarriers() ([]*schemas.CarrierSchema, error)
 	// UpdateCarrier updates a carrier.
-	UpdateCarrier(carrier *models.FreightCarrier) (*models.FreightCarrier, error)
+	UpdateCarrier(schema *schemas.CarrierSchema) (*schemas.CarrierSchema, error)
 	// DeleteCarrier deletes a carrier.
 	DeleteCarrier(id string) error
 }
 
 // CarrierService is the interface that provides carrier methods.
 type CarrierService struct {
-	db CarrierDb
+	db db.CarrierDb
 }
 
-func NewCarrierService(db CarrierDb) *CarrierService {
+func NewCarrierService(db db.CarrierDb) Service {
 	return &CarrierService{db: db}
 }
 

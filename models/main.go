@@ -57,4 +57,6 @@ type FreightCarrier struct {
 	MailingAddress     CarrierIntlAddress
 	BillingAddress     CarrierIntlAddress
 	IdentificationCode []CarrierIdnetifycationCode
+	CreatedAtUTC       string
+	UpdatedAtUTC       string
 }

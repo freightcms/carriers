@@ -8,23 +8,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// CarrierService is the interface that provides carrier methods.
-type Service interface {
-	// CreateCarrier Creates a new carrier and returns the created carrier. If the carrier
-	// could not be created, an error is returned.
-	CreateCarrier(schema *schemas.CreateCarrierSchema) (*schemas.CarrierSchema, error)
-	// GetCarrier returns a carrier by id.
-	GetCarrier(id string) (*schemas.CarrierSchema, error)
-	// GetCarriers returns all carriers.
-	GetCarriers() ([]*schemas.CarrierSchema, error)
-	// UpdateCarrier updates a carrier.
-	UpdateCarrier(schema *schemas.CarrierSchema) (*schemas.CarrierSchema, error)
-	// DeleteCarrier deletes a carrier.
-	DeleteCarrier(id string) error
-}
-
 // ServiceMiddleware injects the carrier service into the context
-func ServiceMiddleware(service Service) echo.MiddlewareFunc {
+func ServiceMiddleware(service services.Service) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			c.Set("carrierService", service)
@@ -55,7 +40,7 @@ func create(c echo.Context) error {
 	return c.JSON(http.StatusOK, &model)
 }
 
-func CreateApp(service Service) *echo.Echo {
+func CreateApp(service services.Service) *echo.Echo {
 	e := echo.New()
 
 	// Routes
