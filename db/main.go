@@ -8,7 +8,7 @@ type CarrierDb interface {
 	// GetCarriers returns all carriers.
 	GetCarriers() ([]*models.FreightCarrier, error)
 	// CreateCarrier creates a new carrier.
-	CreateCarrier(carrier *models.FreightCarrier) (*models.FreightCarrier, error)
+	CreateCarrier(carrier *models.CreateFreightCarrier) (*models.FreightCarrier, error)
 	// UpdateCarrier updates a carrier.
 	UpdateCarrier(carrier *models.FreightCarrier) (*models.FreightCarrier, error)
 	// DeleteCarrier deletes a carrier.

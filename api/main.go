@@ -29,12 +29,16 @@ func create(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 
-	schema := new(schemas.CreateCarrierSchema)
+	var schema schemas.CreateCarrierSchema
 	c.Bind(&schema)
-	model, err := service.CreateCarrier(schema)
+	model, err := service.CreateCarrier(&schema)
 
 	if err != nil {
-		return c.String(http.StatusInternalServerError, "Internal Server Error")
+		return c.JSON(http.StatusInternalServerError, struct {
+			Error string `json:"error"`
+		}{
+			Error: err.Error(),
+		})
 	}
 
 	return c.JSON(http.StatusOK, &model)
@@ -50,10 +54,35 @@ func getAllCarier(c echo.Context) error {
 	carriers, err := service.GetCarriers()
 
 	if err != nil {
-		return c.String(http.StatusInternalServerError, "Internal Server Error")
+		return c.JSON(http.StatusInternalServerError, struct {
+			Error string `json:"error"`
+		}{
+			Error: err.Error(),
+		})
 	}
 
 	return c.JSON(http.StatusOK, &carriers)
+}
+
+func delete(c echo.Context) error {
+	service, ok := c.Get("carrierService").(services.CarrierService)
+	if !ok {
+		c.Logger().Debug("Could not get carrier service")
+		return c.JSON(http.StatusInternalServerError, "Internal Server Error")
+	}
+
+	id := c.Param("id")
+	err := service.DeleteCarrier(id)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, struct {
+			Error string `json:"error"`
+		}{
+			Error: err.Error(),
+		})
+	}
+
+	return nil
 }
 
 func CreateApp(service services.CarrierService) *echo.Echo {
@@ -65,6 +94,7 @@ func CreateApp(service services.CarrierService) *echo.Echo {
 	e.GET("/", getAllCarier, ServiceMiddleware(service))
 	e.GET("/healthcheck", health)
 	e.POST("/", create, ServiceMiddleware(service))
+	e.DELETE("/:id", delete, ServiceMiddleware(service))
 
 	return e
 }

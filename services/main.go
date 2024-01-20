@@ -33,7 +33,7 @@ func NewCarrierService(db db.CarrierDb) CarrierService {
 // CreateCarrier Creates a new carrier and returns the created carrier. If the carrier
 // could not be created, an error is returned.
 func (s *carrierService) CreateCarrier(schema *schemas.CreateCarrierSchema) (*schemas.CarrierSchema, error) {
-	model := models.FreightCarrier{
+	model := models.CreateFreightCarrier{
 		Name: schema.Name,
 		DBA:  schema.DBA,
 	}
@@ -91,9 +91,11 @@ func (s *carrierService) GetCarriers() ([]*schemas.CarrierSchema, error) {
 // UpdateCarrier updates a carrier.
 func (s *carrierService) UpdateCarrier(schema *schemas.CarrierSchema) (*schemas.CarrierSchema, error) {
 	model := models.FreightCarrier{
-		ID:   schema.ID,
-		Name: schema.Name,
-		DBA:  schema.DBA,
+		ID: schema.ID,
+		CreateFreightCarrier: models.CreateFreightCarrier{
+			Name: schema.Name,
+			DBA:  schema.DBA,
+		},
 	}
 	carrier, err := s.db.UpdateCarrier(&model)
 	if err != nil {

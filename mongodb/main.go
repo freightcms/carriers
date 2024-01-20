@@ -41,9 +41,9 @@ func (db *carrierDb) Close() error {
 
 // GetCarrier returns a carrier by id.
 func (db *carrierDb) GetCarrier(id string) (*models.FreightCarrier, error) {
-	carrier := &models.FreightCarrier{}
+	carrier := new(models.FreightCarrier)
 	filter := bson.M{"_id": id}
-	err := db.Collection().FindOne(context.Background(), filter).Decode(carrier)
+	err := db.Collection().FindOne(context.TODO(), filter).Decode(&carrier)
 	if err != nil {
 		return nil, err
 	}
@@ -72,13 +72,18 @@ func (db *carrierDb) GetCarriers() ([]*models.FreightCarrier, error) {
 }
 
 // CreateCarrier creates a new carrier.
-
-func (db *carrierDb) CreateCarrier(carrier *models.FreightCarrier) (*models.FreightCarrier, error) {
-	carrier.CreatedAtUTC = time.Now().UTC().Format(time.RFC3339)
-	carrier.UpdatedAtUTC = time.Now().UTC().Format(time.RFC3339)
-	query := bson.M{"name": carrier.Name}
-	err := db.Collection().FindOne(context.Background(), query).Decode(&carrier)
-	if err == nil {
+func (db *carrierDb) CreateCarrier(carrier *models.CreateFreightCarrier) (*models.FreightCarrier, error) {
+	query := bson.M{
+		"$or": []bson.M{
+			{"name": carrier.Name},
+			{"dba": carrier.DBA},
+		},
+	}
+	count, err := db.Collection().CountDocuments(context.TODO(), query)
+	if err != nil {
+		return nil, errors.New("Carrier already exists")
+	}
+	if count > 0 {
 		return nil, errors.New("Carrier already exists")
 	}
 
@@ -86,20 +91,25 @@ func (db *carrierDb) CreateCarrier(carrier *models.FreightCarrier) (*models.Frei
 	if err != nil {
 		return nil, err
 	}
-	idBytes, err := result.InsertedID.(primitive.ObjectID).MarshalText() // get jus the text out of the ObjectID("...")
+	var carrierResult models.FreightCarrier
+	filter := bson.M{"_id": result.InsertedID}
+	err = db.Collection().FindOne(context.Background(), filter).Decode(&carrierResult)
 	if err != nil {
 		return nil, err
 	}
-	carrier.ID = string(idBytes)
-	return carrier, nil
+	return &carrierResult, nil
 }
 
 // UpdateCarrier updates a carrier.
 func (db *carrierDb) UpdateCarrier(carrier *models.FreightCarrier) (*models.FreightCarrier, error) {
 	carrier.UpdatedAtUTC = time.Now().Format(time.RFC3339)
-	filter := bson.M{"_id": carrier.ID}
+	objectID, err := primitive.ObjectIDFromHex(carrier.ID)
+	if err != nil {
+		return nil, err
+	}
+	filter := bson.M{"_id": objectID}
 	update := bson.M{"$set": carrier}
-	_, err := db.Collection().UpdateOne(context.Background(), filter, update)
+	_, err = db.Collection().UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return nil, err
 	}
@@ -108,8 +118,12 @@ func (db *carrierDb) UpdateCarrier(carrier *models.FreightCarrier) (*models.Frei
 
 // DeleteCarrier deletes a carrier.
 func (db *carrierDb) DeleteCarrier(id string) error {
-	filter := bson.M{"_id": id}
-	_, err := db.Collection().DeleteOne(context.Background(), filter)
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+	filter := bson.M{"_id": objectID}
+	_, err = db.Collection().DeleteOne(context.TODO(), filter)
 	if err != nil {
 		return err
 	}
