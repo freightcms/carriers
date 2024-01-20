@@ -9,6 +9,7 @@ import (
 	"github.com/freightcms/carriers/db"
 	"github.com/freightcms/carriers/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -76,11 +77,15 @@ func (db *carrierDb) CreateCarrier(carrier *models.FreightCarrier) (*models.Frei
 	carrier.CreatedAtUTC = time.Now().UTC().Format(time.RFC3339)
 	carrier.UpdatedAtUTC = time.Now().UTC().Format(time.RFC3339)
 	carrier.ID = uuid.New().String()
-	result, err := db.client.Database("carriers").Collection("carriers").InsertOne(context.Background(), &carrier)
+	result, err := db.client.Database("carriers").Collection("carriers").InsertOne(context.TODO(), &carrier)
 	if err != nil {
 		return nil, err
 	}
-	carrier.ID = result.InsertedID.(string)
+	idBytes, err := result.InsertedID.(primitive.ObjectID).MarshalText() // get jus the text out of the ObjectID("...")
+	if err != nil {
+		return nil, err
+	}
+	carrier.ID = string(idBytes)
 	return carrier, nil
 }
 

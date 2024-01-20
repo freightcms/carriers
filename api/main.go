@@ -30,7 +30,7 @@ func create(c echo.Context) error {
 	}
 
 	schema := new(schemas.CreateCarrierSchema)
-	c.Bind(schema)
+	c.Bind(&schema)
 	model, err := service.CreateCarrier(schema)
 
 	if err != nil {
