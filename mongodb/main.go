@@ -2,12 +2,12 @@ package mongodb
 
 import (
 	"context"
+	"errors"
 	"time"
-
-	"github.com/google/uuid"
 
 	"github.com/freightcms/carriers/db"
 	"github.com/freightcms/carriers/models"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -43,7 +43,7 @@ func (db *carrierDb) Close() error {
 func (db *carrierDb) GetCarrier(id string) (*models.FreightCarrier, error) {
 	carrier := &models.FreightCarrier{}
 	filter := bson.M{"_id": id}
-	err := db.client.Database("carriers").Collection("carriers").FindOne(context.Background(), filter).Decode(carrier)
+	err := db.Collection().FindOne(context.Background(), filter).Decode(carrier)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (db *carrierDb) GetCarrier(id string) (*models.FreightCarrier, error) {
 // GetCarriers returns all carriers.
 func (db *carrierDb) GetCarriers() ([]*models.FreightCarrier, error) {
 	var carriers []*models.FreightCarrier
-	cursor, err := db.client.Database("carriers").Collection("carriers").Find(context.TODO(), bson.M{})
+	cursor, err := db.Collection().Find(context.TODO(), bson.M{})
 	if err != nil {
 		return nil, err
 	}
@@ -76,8 +76,13 @@ func (db *carrierDb) GetCarriers() ([]*models.FreightCarrier, error) {
 func (db *carrierDb) CreateCarrier(carrier *models.FreightCarrier) (*models.FreightCarrier, error) {
 	carrier.CreatedAtUTC = time.Now().UTC().Format(time.RFC3339)
 	carrier.UpdatedAtUTC = time.Now().UTC().Format(time.RFC3339)
-	carrier.ID = uuid.New().String()
-	result, err := db.client.Database("carriers").Collection("carriers").InsertOne(context.TODO(), &carrier)
+	query := bson.M{"name": carrier.Name}
+	err := db.Collection().FindOne(context.Background(), query).Decode(&carrier)
+	if err == nil {
+		return nil, errors.New("Carrier already exists")
+	}
+
+	result, err := db.Collection().InsertOne(context.TODO(), &carrier)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +99,7 @@ func (db *carrierDb) UpdateCarrier(carrier *models.FreightCarrier) (*models.Frei
 	carrier.UpdatedAtUTC = time.Now().Format(time.RFC3339)
 	filter := bson.M{"_id": carrier.ID}
 	update := bson.M{"$set": carrier}
-	_, err := db.client.Database("carriers").Collection("carriers").UpdateOne(context.Background(), filter, update)
+	_, err := db.Collection().UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return nil, err
 	}
@@ -104,9 +109,13 @@ func (db *carrierDb) UpdateCarrier(carrier *models.FreightCarrier) (*models.Frei
 // DeleteCarrier deletes a carrier.
 func (db *carrierDb) DeleteCarrier(id string) error {
 	filter := bson.M{"_id": id}
-	_, err := db.client.Database("carriers").Collection("carriers").DeleteOne(context.Background(), filter)
+	_, err := db.Collection().DeleteOne(context.Background(), filter)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (db *carrierDb) Collection() *mongo.Collection {
+	return db.client.Database("carriers").Collection("carriers")
 }
