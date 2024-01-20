@@ -34,6 +34,10 @@ func NewCarrierDb(uri string) (db.CarrierDb, error) {
 	}, nil
 }
 
+func (db *carrierDb) Close() error {
+	return db.client.Disconnect(context.Background())
+}
+
 // GetCarrier returns a carrier by id.
 func (db *carrierDb) GetCarrier(id string) (*models.FreightCarrier, error) {
 	carrier := &models.FreightCarrier{}
@@ -52,10 +56,7 @@ func (db *carrierDb) GetCarriers() ([]*models.FreightCarrier, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func() {
-		cursor.Close(context.TODO())
-		db.client.Disconnect(context.TODO())
-	}()
+	defer cursor.Close(context.TODO())
 	for cursor.Next(context.Background()) {
 		var carrier models.FreightCarrier
 		if err := cursor.Decode(&carrier); err != nil {

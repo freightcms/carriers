@@ -13,4 +13,7 @@ type CarrierDb interface {
 	UpdateCarrier(carrier *models.FreightCarrier) (*models.FreightCarrier, error)
 	// DeleteCarrier deletes a carrier.
 	DeleteCarrier(id string) error
+	// Close closes the database connections. This function should be defered after
+	// creating a new database connection.
+	Close() error
 }

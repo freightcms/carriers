@@ -1,4 +1,4 @@
-module github.com/freightcms/carriers/mongo
+module github.com/freightcms/carriers/mongodb
 
 go 1.21.5
 
