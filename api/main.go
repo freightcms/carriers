@@ -82,7 +82,7 @@ func delete(c echo.Context) error {
 		})
 	}
 
-	return nil
+	return c.NoContent(http.StatusNoContent)
 }
 
 func CreateApp(service services.CarrierService) *echo.Echo {
