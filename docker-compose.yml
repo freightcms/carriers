@@ -1,0 +1,16 @@
+version: "3.7"
+services:
+  mongo:
+    image: mongo:latest
+    container_name: carriers-db
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data:/data/db
+    environment:
+      SERVICE_NAME: mongo
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: carriers
+      SERVICE_TAGS: dev
