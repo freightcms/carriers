@@ -24,10 +24,11 @@ touch .env
 ```
 
 ```text
-LOG_LEVEL=INFO
-DEBUG=true
 HOST=0.0.0.0
-PORT=8080
+PORT=5000
+DEBUG=True
+LOG_LEVEL=DEBUG
+MONGO_URI=mongodb://localhost:27017
 ```
 
 4. make sure you have all the dependencies installed
@@ -44,13 +45,29 @@ go run main.go
 
 ## Projects
 
-### API
+### api
 
 Contains all the resources necessary to stand up an API and handle basic CRUD operations.
 
-### Models
+### models
 
 Database models and optionally API schema models that can be used for requests.
+
+### db
+
+Contains an `interface` for the APi/Service/mongodb libraries to share and exchange information.
+
+### mongodb
+
+Contains logic for reading and writing to the carriers mongodb database.
+
+### services
+
+Contains business logic to exchange information between API and Database layers.
+
+### Schemas
+
+Contains information for APIs to serialize and deserialize struct objects to/from `JSON` and `BSON`.
 
 ## See Also
 
