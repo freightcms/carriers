@@ -3,16 +3,17 @@ package api
 import (
 	"net/http"
 
+	"github.com/freightcms/carriers/db"
 	"github.com/freightcms/carriers/schemas"
 	"github.com/freightcms/carriers/services"
 	"github.com/labstack/echo/v4"
 )
 
 // ServiceMiddleware injects the carrier service into the context
-func ServiceMiddleware(service services.CarrierService) echo.MiddlewareFunc {
+func ServiceMiddleware(db db.CarrierDb) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			c.Set("carrierService", service)
+			c.Set("carrierService", services.NewCarrierService(db))
 			return next(c)
 		}
 	}
