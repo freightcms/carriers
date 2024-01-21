@@ -1,18 +1,22 @@
 package db
 
-import "github.com/freightcms/carriers/models"
+import (
+	"context"
+
+	"github.com/freightcms/carriers/models"
+)
 
 type CarrierDb interface {
 	// GetCarrier returns a carrier by id.
-	GetCarrier(id string) (*models.FreightCarrier, error)
+	GetCarrier(ctx context.Context, id string) (*models.FreightCarrier, error)
 	// GetCarriers returns all carriers.
-	GetCarriers() ([]*models.FreightCarrier, error)
+	GetCarriers(ctx context.Context) ([]*models.FreightCarrier, error)
 	// CreateCarrier creates a new carrier.
-	CreateCarrier(carrier *models.CreateFreightCarrier) (*models.FreightCarrier, error)
+	CreateCarrier(ctx context.Context, carrier *models.CreateFreightCarrier) (*models.FreightCarrier, error)
 	// UpdateCarrier updates a carrier.
-	UpdateCarrier(carrier *models.FreightCarrier) (*models.FreightCarrier, error)
+	UpdateCarrier(ctx context.Context, carrier *models.FreightCarrier) (*models.FreightCarrier, error)
 	// DeleteCarrier deletes a carrier.
-	DeleteCarrier(id string) error
+	DeleteCarrier(ctx context.Context, id string) error
 	// Close closes the database connections. This function should be defered after
 	// creating a new database connection.
 	Close() error

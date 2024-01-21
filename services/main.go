@@ -1,6 +1,8 @@
 package services
 
 import (
+	"context"
+
 	"github.com/freightcms/carriers/db"
 	"github.com/freightcms/carriers/models"
 	"github.com/freightcms/carriers/schemas"
@@ -10,15 +12,15 @@ import (
 type CarrierService interface {
 	// CreateCarrier Creates a new carrier and returns the created carrier. If the carrier
 	// could not be created, an error is returned.
-	CreateCarrier(schema *schemas.CreateCarrierSchema) (*schemas.CarrierSchema, error)
+	CreateCarrier(ctx context.Context, schema *schemas.CreateCarrierSchema) (*schemas.CarrierSchema, error)
 	// GetCarrier returns a carrier by id.
-	GetCarrier(id string) (*schemas.CarrierSchema, error)
+	GetCarrier(ctx context.Context, id string) (*schemas.CarrierSchema, error)
 	// GetCarriers returns all carriers.
-	GetCarriers() ([]*schemas.CarrierSchema, error)
+	GetCarriers(ctx context.Context) ([]*schemas.CarrierSchema, error)
 	// UpdateCarrier updates a carrier.
-	UpdateCarrier(schema *schemas.CarrierSchema) (*schemas.CarrierSchema, error)
+	UpdateCarrier(ctx context.Context, schema *schemas.CarrierSchema) (*schemas.CarrierSchema, error)
 	// DeleteCarrier deletes a carrier.
-	DeleteCarrier(id string) error
+	DeleteCarrier(ctx context.Context, id string) error
 }
 
 // CarrierService is the interface that provides carrier methods.
@@ -32,12 +34,12 @@ func NewCarrierService(db db.CarrierDb) CarrierService {
 
 // CreateCarrier Creates a new carrier and returns the created carrier. If the carrier
 // could not be created, an error is returned.
-func (s *carrierService) CreateCarrier(schema *schemas.CreateCarrierSchema) (*schemas.CarrierSchema, error) {
+func (s *carrierService) CreateCarrier(ctx context.Context, schema *schemas.CreateCarrierSchema) (*schemas.CarrierSchema, error) {
 	model := models.CreateFreightCarrier{
 		Name: schema.Name,
 		DBA:  schema.DBA,
 	}
-	carrier, err := s.db.CreateCarrier(&model)
+	carrier, err := s.db.CreateCarrier(ctx, &model)
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +54,8 @@ func (s *carrierService) CreateCarrier(schema *schemas.CreateCarrierSchema) (*sc
 }
 
 // GetCarrier returns a carrier by id.
-func (s *carrierService) GetCarrier(id string) (*schemas.CarrierSchema, error) {
-	carrier, err := s.db.GetCarrier(id)
+func (s *carrierService) GetCarrier(ctx context.Context, id string) (*schemas.CarrierSchema, error) {
+	carrier, err := s.db.GetCarrier(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -68,8 +70,8 @@ func (s *carrierService) GetCarrier(id string) (*schemas.CarrierSchema, error) {
 }
 
 // GetCarriers returns all carriers.
-func (s *carrierService) GetCarriers() ([]*schemas.CarrierSchema, error) {
-	carriers, err := s.db.GetCarriers()
+func (s *carrierService) GetCarriers(ctx context.Context) ([]*schemas.CarrierSchema, error) {
+	carriers, err := s.db.GetCarriers(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +91,7 @@ func (s *carrierService) GetCarriers() ([]*schemas.CarrierSchema, error) {
 }
 
 // UpdateCarrier updates a carrier.
-func (s *carrierService) UpdateCarrier(schema *schemas.CarrierSchema) (*schemas.CarrierSchema, error) {
+func (s *carrierService) UpdateCarrier(ctx context.Context, schema *schemas.CarrierSchema) (*schemas.CarrierSchema, error) {
 	model := models.FreightCarrier{
 		ID: schema.ID,
 		CreateFreightCarrier: models.CreateFreightCarrier{
@@ -97,7 +99,7 @@ func (s *carrierService) UpdateCarrier(schema *schemas.CarrierSchema) (*schemas.
 			DBA:  schema.DBA,
 		},
 	}
-	carrier, err := s.db.UpdateCarrier(&model)
+	carrier, err := s.db.UpdateCarrier(ctx, &model)
 	if err != nil {
 		return nil, err
 	}
@@ -112,6 +114,6 @@ func (s *carrierService) UpdateCarrier(schema *schemas.CarrierSchema) (*schemas.
 }
 
 // DeleteCarrier deletes a carrier.
-func (s *carrierService) DeleteCarrier(id string) error {
-	return s.db.DeleteCarrier(id)
+func (s *carrierService) DeleteCarrier(ctx context.Context, id string) error {
+	return s.db.DeleteCarrier(ctx, id)
 }

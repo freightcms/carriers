@@ -31,7 +31,7 @@ func create(c echo.Context) error {
 
 	var schema schemas.CreateCarrierSchema
 	c.Bind(&schema)
-	model, err := service.CreateCarrier(&schema)
+	model, err := service.CreateCarrier(c.Request().Context(), &schema)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, struct {
@@ -51,7 +51,7 @@ func getAllCarier(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 
-	carriers, err := service.GetCarriers()
+	carriers, err := service.GetCarriers(c.Request().Context())
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, struct {
@@ -72,7 +72,7 @@ func delete(c echo.Context) error {
 	}
 
 	id := c.Param("id")
-	err := service.DeleteCarrier(id)
+	err := service.DeleteCarrier(c.Request().Context(), id)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, struct {

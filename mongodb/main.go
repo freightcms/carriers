@@ -40,10 +40,10 @@ func (db *carrierDb) Close() error {
 }
 
 // GetCarrier returns a carrier by id.
-func (db *carrierDb) GetCarrier(id string) (*models.FreightCarrier, error) {
+func (db *carrierDb) GetCarrier(ctx context.Context, id string) (*models.FreightCarrier, error) {
 	carrier := new(models.FreightCarrier)
 	filter := bson.M{"_id": id}
-	err := db.Collection().FindOne(context.TODO(), filter).Decode(&carrier)
+	err := db.Collection().FindOne(ctx, filter).Decode(&carrier)
 	if err != nil {
 		return nil, err
 	}
@@ -51,35 +51,28 @@ func (db *carrierDb) GetCarrier(id string) (*models.FreightCarrier, error) {
 }
 
 // GetCarriers returns all carriers.
-func (db *carrierDb) GetCarriers() ([]*models.FreightCarrier, error) {
+func (db *carrierDb) GetCarriers(ctx context.Context) ([]*models.FreightCarrier, error) {
 	var carriers []*models.FreightCarrier
-	cursor, err := db.Collection().Find(context.TODO(), bson.M{})
+	cursor, err := db.Collection().Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(context.TODO())
-	for cursor.Next(context.Background()) {
-		var carrier models.FreightCarrier
-		if err := cursor.Decode(&carrier); err != nil {
-			return nil, err
-		}
-		carriers = append(carriers, &carrier)
-	}
-	if err := cursor.Err(); err != nil {
+	defer cursor.Close(ctx)
+	if err := cursor.All(ctx, &carriers); err != nil {
 		return nil, err
 	}
 	return carriers, nil
 }
 
 // CreateCarrier creates a new carrier.
-func (db *carrierDb) CreateCarrier(carrier *models.CreateFreightCarrier) (*models.FreightCarrier, error) {
+func (db *carrierDb) CreateCarrier(ctx context.Context, carrier *models.CreateFreightCarrier) (*models.FreightCarrier, error) {
 	query := bson.M{
 		"$or": []bson.M{
 			{"name": carrier.Name},
 			{"dba": carrier.DBA},
 		},
 	}
-	count, err := db.Collection().CountDocuments(context.TODO(), query)
+	count, err := db.Collection().CountDocuments(ctx, query)
 	if err != nil {
 		return nil, errors.New("Carrier already exists")
 	}
@@ -87,13 +80,13 @@ func (db *carrierDb) CreateCarrier(carrier *models.CreateFreightCarrier) (*model
 		return nil, errors.New("Carrier already exists")
 	}
 
-	result, err := db.Collection().InsertOne(context.TODO(), &carrier)
+	result, err := db.Collection().InsertOne(ctx, &carrier)
 	if err != nil {
 		return nil, err
 	}
 	var carrierResult models.FreightCarrier
 	filter := bson.M{"_id": result.InsertedID}
-	err = db.Collection().FindOne(context.Background(), filter).Decode(&carrierResult)
+	err = db.Collection().FindOne(ctx, filter).Decode(&carrierResult)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +94,7 @@ func (db *carrierDb) CreateCarrier(carrier *models.CreateFreightCarrier) (*model
 }
 
 // UpdateCarrier updates a carrier.
-func (db *carrierDb) UpdateCarrier(carrier *models.FreightCarrier) (*models.FreightCarrier, error) {
+func (db *carrierDb) UpdateCarrier(ctx context.Context, carrier *models.FreightCarrier) (*models.FreightCarrier, error) {
 	carrier.UpdatedAtUTC = time.Now().Format(time.RFC3339)
 	objectID, err := primitive.ObjectIDFromHex(carrier.ID)
 	if err != nil {
@@ -109,7 +102,7 @@ func (db *carrierDb) UpdateCarrier(carrier *models.FreightCarrier) (*models.Frei
 	}
 	filter := bson.M{"_id": objectID}
 	update := bson.M{"$set": carrier}
-	_, err = db.Collection().UpdateOne(context.TODO(), filter, update)
+	_, err = db.Collection().UpdateOne(ctx, filter, update)
 	if err != nil {
 		return nil, err
 	}
@@ -117,13 +110,13 @@ func (db *carrierDb) UpdateCarrier(carrier *models.FreightCarrier) (*models.Frei
 }
 
 // DeleteCarrier deletes a carrier.
-func (db *carrierDb) DeleteCarrier(id string) error {
+func (db *carrierDb) DeleteCarrier(ctx context.Context, id string) error {
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return err
 	}
 	filter := bson.M{"_id": objectID}
-	_, err = db.Collection().DeleteOne(context.TODO(), filter)
+	_, err = db.Collection().DeleteOne(ctx, filter)
 	if err != nil {
 		return err
 	}
