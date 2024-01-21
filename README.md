@@ -1,6 +1,12 @@
 # Carriers
 
-Collection of Data Transfer Objects (DTOs) that represent the different types of Carriers and their related information.
+Stand alone Application containing various libraries that can be used to stand up an API which can hold the data and inforation for Freight Carriers. The different Packages can be used independantly of each other through Inversion of Control (IoC) and Dependency Injection Practices.
+
+## Tech Stack
+
+- Golang - language built in
+- MongoDB - database
+- Echo - Web API Framework
 
 ## Getting Started
 
@@ -31,13 +37,13 @@ LOG_LEVEL=DEBUG
 MONGO_URI=mongodb://localhost:27017
 ```
 
-4. make sure you have all the dependencies installed
+5. make sure you have all the dependencies installed
 
 ```bash
 go mod tidy
 ```
 
-5. run the project
+6. run the project
 
 ```bash
 go run main.go
