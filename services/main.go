@@ -24,7 +24,7 @@ type CarrierService interface {
 }
 
 type carrierService struct {
-	ctx *context.Context
+	ctx context.Context
 	db  db.CarrierDb
 }
 
@@ -42,7 +42,7 @@ type carrierService struct {
 //	}
 func NewCarrierService(ctx context.Context, db db.CarrierDb) CarrierService {
 	return &carrierService{
-		ctx: &ctx,
+		ctx: ctx,
 		db:  db,
 	}
 }
