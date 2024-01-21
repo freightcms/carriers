@@ -1,0 +1,5 @@
+HOST=0.0.0.0
+PORT=5000
+DEBUG=True
+LOG_LEVEL=DEBUG
+MONGO_URI=mongodb://localhost:27017/carriers
