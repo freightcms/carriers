@@ -2,14 +2,43 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 
 	"github.com/freightcms/carriers/api"
 	"github.com/freightcms/carriers/mongodb"
 	"github.com/freightcms/carriers/services"
+
+	"github.com/joho/godotenv"
 )
 
+type appEnvironment struct {
+	mongodbURL string
+	port       int
+	host       string
+}
+
+func getAppEnv() *appEnvironment {
+	err := godotenv.Load(".env")
+	if err != nil {
+		panic(err)
+	}
+	port, err := strconv.Atoi(os.Getenv("PORT"))
+	if err != nil {
+		panic(err)
+	}
+
+	return &appEnvironment{
+		mongodbURL: os.Getenv("MONGO_URI"),
+		port:       port,
+		host:       os.Getenv("HOST"),
+	}
+}
+
 func main() {
-	db, err := mongodb.NewCarrierDb("mongodb://localhost:27017")
+
+	env := getAppEnv()
+	db, err := mongodb.NewCarrierDb(env.mongodbURL)
 	if err != nil {
 		panic(err)
 	}
@@ -18,5 +47,8 @@ func main() {
 	service := services.NewCarrierService(db)
 	app := api.CreateApp(service)
 	// CreateApp creates an echo app with all routes defined.
-	fmt.Print(app.Start(":8080"))
+	host := fmt.Sprintf("%s:%d", env.host, env.port)
+	if err := app.Start(host); err != nil {
+		panic(err)
+	}
 }
