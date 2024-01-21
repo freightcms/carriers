@@ -2,7 +2,7 @@ package mongodb
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"time"
 
 	"github.com/freightcms/carriers/db"
@@ -66,18 +66,19 @@ func (db *carrierDb) GetCarriers(ctx context.Context) ([]*models.FreightCarrier,
 
 // CreateCarrier creates a new carrier.
 func (db *carrierDb) CreateCarrier(ctx context.Context, carrier *models.CreateFreightCarrier) (*models.FreightCarrier, error) {
-	query := bson.M{
-		"$or": []bson.M{
-			{"name": carrier.Name},
-			{"dba": carrier.DBA},
-		},
-	}
-	count, err := db.Collection().CountDocuments(ctx, query)
+	count, err := db.Collection().CountDocuments(ctx, bson.M{"name": carrier.Name})
 	if err != nil {
-		return nil, errors.New("Carrier already exists")
+		return nil, fmt.Errorf("Error checking if carrier exists: %s", err.Error())
 	}
 	if count > 0 {
-		return nil, errors.New("Carrier already exists")
+		return nil, fmt.Errorf("Carrier with name %s already exists", carrier.Name)
+	}
+	count, err = db.Collection().CountDocuments(ctx, bson.M{"dba": carrier.DBA})
+	if err != nil {
+		return nil, fmt.Errorf("Error checking if carrier exists: %s", err.Error())
+	}
+	if count > 0 {
+		return nil, fmt.Errorf("Carrier with dba %s already exists", carrier.DBA)
 	}
 
 	result, err := db.Collection().InsertOne(ctx, &carrier)
