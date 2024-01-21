@@ -1,0 +1,90 @@
+{
+	"info": {
+		"_postman_id": "0f3c497f-b590-477e-a564-623a8bbf4789",
+		"name": "Carriers",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "25685052",
+		"_collection_link": "https://bold-meteor-858533.postman.co/workspace/Open-Freight~cb91ad1a-a22f-4976-93dc-304d3eab9195/collection/25685052-0f3c497f-b590-477e-a564-623a8bbf4789?action=share&source=collection_link&creator=25685052"
+	},
+	"item": [
+		{
+			"name": "Get Carriers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{carrier_host_url}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Carrier",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Schoeder Freight 1116\",\n    \"dba\": \"Schoeder Freight LLC. 652\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{carrier_host_url}}"
+			},
+			"response": [
+				{
+					"name": "Create Carrier",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Schoeder Freight\",\n    \"dba\": \"Schoeder Freight LLC.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{carrier_host_url}}"
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": null
+				}
+			]
+		},
+		{
+			"name": "Delete Carrier By ID",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{carrier_host_url}}/:carrierID",
+					"host": [
+						"{{carrier_host_url}}"
+					],
+					"path": [
+						":carrierID"
+					],
+					"variable": [
+						{
+							"key": "carrierID",
+							"value": "65ac30b1bb4787bf5e9dcfbb"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
