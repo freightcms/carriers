@@ -25,3 +25,6 @@ go.work
 
 # ignore all build files
 carriers
+
+# ignore all debug build files
+__debug_bin*
