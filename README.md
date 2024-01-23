@@ -10,14 +10,22 @@ Stand alone Application containing various libraries that can be used to stand u
 
 ## Getting Started
 
-1. Ensure you have the version of Go pinned in the `go.mode` file
-2. clone your respository
+### Prerequisites
+
+- Have [docker](https://www.docker.com/products/docker-desktop/) installed
+- Have [mongo shell](https://www.mongodb.com/docs/mongodb-shell/install/) installed
+- Have the version of Go pinned in the `go.mode` file
+
+### Environment Setup
+
+1. Run `docker compose pull` to get latest
+2. Clone your respository
 
 ```bash
 `git clone https://github.com/freightcms/carriers`
 ```
 
-3. move into the cloned directory
+3. Move into the cloned directory
 
 ```bash
 `cd ./carriers`
@@ -37,15 +45,29 @@ LOG_LEVEL=DEBUG
 MONGO_URI=mongodb://localhost:27017
 ```
 
-5. make sure you have all the dependencies installed
+5. Fetch `mongodb` image
 
-```bash
+```sh
+docker compose pull
+```
+
+6. Start `mongodb` instance
+
+```sh
+docker compose up mongodb
+```
+
+7. Seed the database and create collections by running script in terminal `./scripts/init_db.sh`
+   - If you run into an issue with execution run `chmod +x ./scrpts/*`
+8. make sure you have all the dependencies installed
+
+```sh
 go mod tidy
 ```
 
 6. run the project
 
-```bash
+```sh
 go run main.go
 ```
 
@@ -79,4 +101,5 @@ Contains information for APIs to serialize and deserialize struct objects to/fro
 
 - [Freight KB Carriers](https://kb.freightcms.com/carriers/)
 - [mongodb driver](https://github.com/mongodb/mongo-go-driver)
+- [mongoshell](https://www.mongodb.com/docs/mongocli/stable/command/mongocli/)
 - [godot](https://golangbyexample.com/load-env-fiie-golang/)

@@ -1,6 +1,6 @@
 version: "3.7"
 services:
-  mongo:
+  mongodb:
     image: mongo:latest
     container_name: carriers-db
     restart: always
@@ -10,7 +10,5 @@ services:
       - ./data:/data/db
     environment:
       SERVICE_NAME: mongo
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
       MONGO_INITDB_DATABASE: carriers
       SERVICE_TAGS: dev
