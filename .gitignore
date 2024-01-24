@@ -28,3 +28,6 @@ carriers
 
 # ignore all debug build files
 __debug_bin*
+
+# ignore all local docker files
+data/*
