@@ -4,7 +4,11 @@ go 1.21.5
 
 require github.com/labstack/echo/v4 v4.11.4
 
+require github.com/freightcms/carriers/models v0.0.0-20240103200317-d84883dd25b3 // indirect
+
 require (
+	github.com/freightcms/carriers/schemas v0.0.0-20240103200317-d84883dd25b3
+	github.com/freightcms/carriers/services v0.0.0-20240103200317-d84883dd25b3
 	github.com/labstack/gommon v0.4.2 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

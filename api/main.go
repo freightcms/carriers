@@ -55,12 +55,88 @@ func create(c echo.Context) error {
 	return c.JSON(http.StatusOK, &model)
 }
 
+func getCarriers(c echo.Context) error {
+	service, ok := c.Get("carrierService").(services.CarrierService)
+	if !ok {
+		c.Logger().Debug("Could not get carrier service")
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+
+	models, err := service.GetCarriers()
+
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+
+	return c.JSON(http.StatusOK, &models)
+}
+
+func getCarrier(c echo.Context) error {
+	service, ok := c.Get("carrierService").(services.CarrierService)
+	if !ok {
+		c.Logger().Debug("Could not get carrier service")
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+
+	id := c.Param("id")
+	model, err := service.GetCarrier(id)
+
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+
+	return c.JSON(http.StatusOK, &model)
+}
+
+func deleteCarrier(c echo.Context) error {
+	service, ok := c.Get("carrierService").(services.CarrierService)
+	if !ok {
+		c.Logger().Debug("Could not get carrier service")
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+
+	id := c.Param("id")
+	err := service.DeleteCarrier(id)
+
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+func updateCarrier(c echo.Context) error {
+	service, ok := c.Get("carrierService").(services.CarrierService)
+	if !ok {
+		c.Logger().Debug("Could not get carrier service")
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+
+	id := c.Param("id")
+	schema := new(schemas.CarrierSchema)
+	c.Bind(schema)
+	schema.ID = id
+
+	model, err := service.UpdateCarrier(schema)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+
+	return c.JSON(http.StatusOK, &model)
+}
+
+// CreateApp creates a new echo app for the Carrier API to run on.
+// Service sould be the carrier service used to interact between any external web service(s) or data stores.
 func CreateApp(service Service) *echo.Echo {
 	e := echo.New()
 
 	// Routes
 	e.GET("/", health)
-	e.POST("/carriers", create, ServiceMiddleware(service))
+	e.GET("/carriers", getCarriers, ServiceMiddleware(service))          // paginate through carriers
+	e.GET("/carriers/:id", getCarrier, ServiceMiddleware(service))       // get a specific carrier by id
+	e.DELETE("/carriers/:id", deleteCarrier, ServiceMiddleware(service)) // delete a specific carrier by id
+	e.PUT("/carriers/:id", updateCarrier, ServiceMiddleware(service))    // update a specific carrier by id
+	e.POST("/carriers", create, ServiceMiddleware(service))              // create a new carrier
 
 	return e
 }

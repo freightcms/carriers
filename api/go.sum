@@ -1,5 +1,11 @@
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/freightcms/carriers/models v0.0.0-20240103200317-d84883dd25b3 h1:GG73U/islxJdEl2lW2mQKUkzXQzjMnACi63SPXnw1Vo=
+github.com/freightcms/carriers/models v0.0.0-20240103200317-d84883dd25b3/go.mod h1:Wan4QPrMAjChDX/ZaFjs4htvLUnzR6PaSjWS2f1hDvk=
+github.com/freightcms/carriers/schemas v0.0.0-20240103200317-d84883dd25b3 h1:eGVE2HPbwofZ3AnZ0Me22EXCnRCHFuvdvucQFw+BXqA=
+github.com/freightcms/carriers/schemas v0.0.0-20240103200317-d84883dd25b3/go.mod h1:nY4eCUbyoaHHjx/UY89qWRDqxaMxuEsy5/+lk8pmshQ=
+github.com/freightcms/carriers/services v0.0.0-20240103200317-d84883dd25b3 h1:JyiRKNwrBDesMCHUmPvNPMa0IfqRB4DmDcOsSPSox9Q=
+github.com/freightcms/carriers/services v0.0.0-20240103200317-d84883dd25b3/go.mod h1:jKlM4GLNLSlOb+ei3ZTACgF72eDLZjg/fOLgYeLdxDI=
 github.com/labstack/echo/v4 v4.11.4 h1:vDZmA+qNeh1pd/cCkEicDMrjtrnMGQ1QFI9gWN1zGq8=
 github.com/labstack/echo/v4 v4.11.4/go.mod h1:noh7EvLwqDsmh/X/HWKPUl1AjzJrhyptRyEbQJfxen8=
 github.com/labstack/gommon v0.4.2 h1:F8qTUNXgG1+6WQmqoUWnz8WiEU60mXVVw0P4ht1WRA0=
