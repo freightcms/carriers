@@ -5,7 +5,8 @@ import (
 )
 
 type FreightCarrierModel struct {
-	ID string `json:"ID" bson:"_id"`
+	ID     string `json:"ID" bson:"_id"`
+	Status string `json:"Status" bson:"Status"` // the status of the carrier such as Active, Inactive, etc.
 	partyModels.Company
 	IdentificationCodes []IdentificationCodeModel      `json:"IdentificationCodes" bson:"IdentificationCodes"`
 	Insurance           []FreightCarrierInsuranceModel `json:"Insurance" bson:"Insurance"`
