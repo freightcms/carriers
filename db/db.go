@@ -1,11 +1,15 @@
 package db
 
-import "github.com/freightcms/carriers/models"
+import (
+	"context"
+
+	"github.com/freightcms/carriers/models"
+)
 
 type CarrierDb interface {
-	GetCarriers() ([]models.FreightCarrierModel, error)
-	GetCarrier(id string) (*models.FreightCarrierModel, error)
-	CreateCarrier(carrier *models.FreightCarrierModel) (*models.FreightCarrierModel, error)
-	UpdateCarrier(id string, carrier *models.FreightCarrierModel) (*models.FreightCarrierModel, error)
-	DeleteCarrier(id string) error
+	GetCarriers(ctx context.Context) ([]models.FreightCarrierModel, error)
+	GetCarrier(ctx context.Context, id string) (*models.FreightCarrierModel, error)
+	CreateCarrier(ctx context.Context, carrier *models.FreightCarrierModel) error
+	UpdateCarrier(ctx context.Context, id string, carrier *models.FreightCarrierModel) error
+	DeleteCarrier(ctx context.Context, id string) error
 }
