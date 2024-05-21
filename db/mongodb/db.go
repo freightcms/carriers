@@ -31,7 +31,7 @@ func (c *carrierDb) GetCarriers(ctx context.Context) ([]models.FreightCarrierMod
 	}
 	defer cursor.Close(ctx)
 
-	var results []models.FreightCarrierModel
+	results := make([]models.FreightCarrierModel, 0)
 	for cursor.Next(ctx) {
 		var carrier models.FreightCarrierModel
 		if err = cursor.Decode(&carrier); err != nil {
