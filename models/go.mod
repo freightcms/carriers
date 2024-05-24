@@ -4,7 +4,7 @@ go 1.22.1
 
 toolchain go1.22.3
 
-require github.com/freightcms/parties/models v1.0.0
+require github.com/freightcms/parties/models v1.0.1
 
 require (
 	github.com/freightcms/common/models v1.1.0 // indirect
