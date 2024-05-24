@@ -4,7 +4,7 @@ go 1.22.3
 
 require (
 	github.com/freightcms/carriers/db v1.1.0
-	github.com/freightcms/carriers/models v0.0.0-20240521031013-a9a334b18f1d
+	github.com/freightcms/carriers/models v0.0.0-20240524015953-065b8a65557a
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-playground/assert/v2 v2.2.0
 )
@@ -15,7 +15,7 @@ require (
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
 	github.com/freightcms/common/models v1.1.0 // indirect
-	github.com/freightcms/locations/models v1.0.0 // indirect
+	github.com/freightcms/locations/models v1.0.1 // indirect
 	github.com/freightcms/parties/models v1.0.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
