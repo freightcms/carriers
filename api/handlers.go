@@ -1,12 +1,27 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
+	"regexp"
 
 	"github.com/freightcms/carriers/db"
 	"github.com/freightcms/carriers/models"
 	"github.com/gin-gonic/gin"
 )
+
+var (
+	pageRegex     = regexp.MustCompile("page=[0-9]+")
+	pageSizeRegex = regexp.MustCompile("pageSize=[0-9]+")
+)
+
+// GetPaginatedLink will return the current url passed in query parameters `page=` and `pageSize=`
+// with the parameers passed in.
+func GetPaginatedLink(currentUrl string, page, pageSize int) string {
+	nextLink := pageRegex.ReplaceAllLiteralString(currentUrl, fmt.Sprintf("page=%d", page))
+	nextLink = pageSizeRegex.ReplaceAllLiteralString(nextLink, fmt.Sprintf("pageSize=%d", pageSize))
+	return nextLink
+}
 
 // GetCarriersHandler is a handler function that retrieves all carriers from the database.
 // The response is a JSON array of carrier objects.
@@ -36,8 +51,17 @@ func GetCarriersHandler(c *gin.Context) {
 		PageSize: query.PageSize,
 		Pages:    len(carriers) / query.PageSize,
 		Entities: &carriers,
+		Next:     "",
+		Previous: "",
 	}
-	c.JSON(http.StatusOK, &resp)
+	if len(carriers) >= pageSize {
+		// we're going to assume there are more rseults
+		resp.Next = GetPaginatedLink(c.Request.RequestURI, query.Page+1, pageSize)
+	}
+	if query.Page > 0 {
+		resp.Previous = GetPaginatedLink(c.Request.RequestURI, query.Page-1, pageSize)
+	}
+	c.JSON(http.StatusOK, resp)
 }
 
 func GetCarrierHandler(c *gin.Context) {
