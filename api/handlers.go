@@ -48,8 +48,8 @@ func GetCarriersHandler(c *gin.Context) {
 	resp := &PaginatedQueryResponse{
 		Total:    len(carriers),
 		Page:     query.Page,
-		PageSize: query.PageSize,
-		Pages:    len(carriers) / query.PageSize,
+		PageSize: pageSize,
+		Pages:    len(carriers) / pageSize,
 		Entities: &carriers,
 		Next:     "",
 		Previous: "",
