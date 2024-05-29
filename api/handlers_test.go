@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"regexp"
@@ -65,10 +66,13 @@ func TestGetCarriersHandler_Should_Return_BindingError_With_400_StatusCode(t *te
 	// Act
 	req, _ := http.NewRequest(http.MethodGet, "http://localhost:3000/carriers?page=a", nil)
 	router.ServeHTTP(w, req)
+	jsonBody := map[string]interface{}{}
+	err := json.Unmarshal(w.Body.Bytes(), &jsonBody)
 
 	// Assert
 	assert.Equal(t, http.StatusBadRequest, w.Code)
-	assert.MatchRegex(t, w.Body.String(), regexp.MustCompile("\"error\":"))
+	assert.Equal(t, nil, err)
+	assert.NotEqual(t, nil, jsonBody["error"])
 }
 
 func TestGetCarriersHandler_Should_Set_NextLink_In_Response(t *testing.T) {
@@ -94,8 +98,16 @@ func TestGetCarriersHandler_Should_Set_NextLink_In_Response(t *testing.T) {
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
 	req.RequestURI = uri
 	router.ServeHTTP(w, req)
+	jsonBody := map[string]interface{}{}
+	err := json.Unmarshal(w.Body.Bytes(), &jsonBody)
 
 	// Assert
+	assert.Equal(t, nil, err)
+	assert.Equal(t, 2, jsonBody["total"])
+	assert.Equal(t, 2, jsonBody["page"])
+	assert.Equal(t, 2, jsonBody["pageSize"])
+	assert.Equal(t, jsonBody["next"], "http://localhost:3000/carriers?pageSize=2&page=3")
+	assert.Equal(t, jsonBody["previous"], "http://localhost:3000/carriers?pageSize=2&page=1")
 	assert.Equal(t, w.Code, http.StatusOK)
 	assert.MatchRegex(t, w.Body.String(), regexp.MustCompile("\"next\"\\:(\\s+)?\"(.+)(page\\=3).+\""))
 }
@@ -125,8 +137,14 @@ func TestGetCarriersHandler_Should_Not_Set_NextLink(t *testing.T) {
 	router.ServeHTTP(w, req)
 
 	// Assert
+	jsonBody := &PaginatedQueryResponse{}
+	json.Unmarshal(w.Body.Bytes(), &jsonBody)
 	assert.Equal(t, w.Code, http.StatusOK)
-	assert.MatchRegex(t, w.Body.String(), regexp.MustCompile("\"next\"\\:(\\s+)?\"\""))
+	assert.Equal(t, 1, jsonBody.Total)
+	assert.Equal(t, 2, jsonBody.Page)
+	assert.Equal(t, 2, jsonBody.PageSize)
+	assert.Equal(t, "", jsonBody.Next) // should be no more links since there were less results than requested
+	assert.Equal(t, "http://localhost:3000/carriers?pageSize=2&page=1", jsonBody.Previous)
 }
 
 func TestGetCarriersHandler_PreviousLink_Should_Be_Empty(t *testing.T) {
@@ -154,8 +172,14 @@ func TestGetCarriersHandler_PreviousLink_Should_Be_Empty(t *testing.T) {
 	router.ServeHTTP(w, req)
 
 	// Assert
+	jsonBody := &PaginatedQueryResponse{}
+	json.Unmarshal(w.Body.Bytes(), &jsonBody)
 	assert.Equal(t, w.Code, http.StatusOK)
-	assert.MatchRegex(t, w.Body.String(), regexp.MustCompile("\"previous\"\\:(\\s+)?\"\""))
+	assert.Equal(t, 2, jsonBody.Total)
+	assert.Equal(t, 0, jsonBody.Page)
+	assert.Equal(t, 2, jsonBody.PageSize)
+	assert.Equal(t, "http://localhost:3000/carriers?pageSize=2&page=1", jsonBody.Next)
+	assert.Equal(t, "", jsonBody.Previous) // should be no more links since there were less results than requested
 }
 
 func TestGetCarriersHandler_PreviousLink_Should_Be_Not_Empty(t *testing.T) {
@@ -183,9 +207,14 @@ func TestGetCarriersHandler_PreviousLink_Should_Be_Not_Empty(t *testing.T) {
 	router.ServeHTTP(w, req)
 
 	// Assert
-	body := w.Body.String()
+	jsonBody := &PaginatedQueryResponse{}
+	json.Unmarshal(w.Body.Bytes(), &jsonBody)
 	assert.Equal(t, w.Code, http.StatusOK)
-	assert.MatchRegex(t, body, regexp.MustCompile("\"previous\"\\:(\\s+)?\"(.+)(page\\=0).+\""))
+	assert.Equal(t, 2, jsonBody.Total)
+	assert.Equal(t, 1, jsonBody.Page)
+	assert.Equal(t, 2, jsonBody.PageSize)
+	assert.Equal(t, "http://localhost:3000/carriers?pageSize=2&page=2", jsonBody.Next)
+	assert.Equal(t, "http://localhost:3000/carriers?pageSize=2&page=0", jsonBody.Previous) // should be no more links since there were less results than requested
 }
 
 func TestGetCarriersHandler_Should_Default_PageSize_When_Not_Provided(t *testing.T) {
@@ -213,8 +242,12 @@ func TestGetCarriersHandler_Should_Default_PageSize_When_Not_Provided(t *testing
 	router.ServeHTTP(w, req)
 
 	// Assert
-	body := w.Body.String()
+	jsonBody := &PaginatedQueryResponse{}
+	json.Unmarshal(w.Body.Bytes(), &jsonBody)
 	assert.Equal(t, w.Code, http.StatusOK)
-	assert.MatchRegex(t, body, regexp.MustCompile("\"page\"\\:(\\s+)?2"))
-	assert.MatchRegex(t, body, regexp.MustCompile("\"pageSize\"\\:(\\s+)?10"))
+	assert.Equal(t, 11, jsonBody.Total)
+	assert.Equal(t, 2, jsonBody.Page)
+	assert.Equal(t, 10, jsonBody.PageSize)
+	assert.Equal(t, "http://localhost:3000/carriers?&page=3", jsonBody.Next)
+	assert.Equal(t, "http://localhost:3000/carriers?&page=1", jsonBody.Previous) // should be no more links since there were less results than requested
 }
