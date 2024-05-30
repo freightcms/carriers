@@ -18,8 +18,8 @@ var (
 // GetPaginatedLink will return the current url passed in query parameters `page=` and `pageSize=`
 // with the parameers passed in.
 func GetPaginatedLink(currentUrl string, page, pageSize int) string {
-	nextLink := pageRegex.ReplaceAllLiteralString(currentUrl, fmt.Sprintf("page=%d", page))
-	nextLink = pageSizeRegex.ReplaceAllLiteralString(nextLink, fmt.Sprintf("pageSize=%d", pageSize))
+	nextLink := pageRegex.ReplaceAllString(currentUrl, fmt.Sprintf("page=%d", page))
+	nextLink = pageSizeRegex.ReplaceAllString(nextLink, fmt.Sprintf("pageSize=%d", pageSize))
 	return nextLink
 }
 
