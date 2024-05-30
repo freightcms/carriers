@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"regexp"
 	"testing"
 
 	"github.com/freightcms/carriers/db"
@@ -66,13 +65,15 @@ func TestGetCarriersHandler_Should_Return_BindingError_With_400_StatusCode(t *te
 	// Act
 	req, _ := http.NewRequest(http.MethodGet, "http://localhost:3000/carriers?page=a", nil)
 	router.ServeHTTP(w, req)
-	jsonBody := map[string]interface{}{}
+	jsonBody := struct {
+		Error string `json:"error"`
+	}{}
 	err := json.Unmarshal(w.Body.Bytes(), &jsonBody)
 
 	// Assert
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	assert.Equal(t, nil, err)
-	assert.NotEqual(t, nil, jsonBody["error"])
+	assert.NotEqual(t, nil, jsonBody.Error)
 }
 
 func TestGetCarriersHandler_Should_Set_NextLink_In_Response(t *testing.T) {
@@ -98,18 +99,17 @@ func TestGetCarriersHandler_Should_Set_NextLink_In_Response(t *testing.T) {
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
 	req.RequestURI = uri
 	router.ServeHTTP(w, req)
-	jsonBody := map[string]interface{}{}
+	jsonBody := &PaginatedQueryResponse{}
 	err := json.Unmarshal(w.Body.Bytes(), &jsonBody)
 
 	// Assert
 	assert.Equal(t, nil, err)
-	assert.Equal(t, 2, jsonBody["total"])
-	assert.Equal(t, 2, jsonBody["page"])
-	assert.Equal(t, 2, jsonBody["pageSize"])
-	assert.Equal(t, jsonBody["next"], "http://localhost:3000/carriers?pageSize=2&page=3")
-	assert.Equal(t, jsonBody["previous"], "http://localhost:3000/carriers?pageSize=2&page=1")
 	assert.Equal(t, w.Code, http.StatusOK)
-	assert.MatchRegex(t, w.Body.String(), regexp.MustCompile("\"next\"\\:(\\s+)?\"(.+)(page\\=3).+\""))
+	assert.Equal(t, 2, jsonBody.Total)
+	assert.Equal(t, 2, jsonBody.Page)
+	assert.Equal(t, 2, jsonBody.PageSize)
+	assert.Equal(t, jsonBody.Next, "http://localhost:3000/carriers?pageSize=2&page=3")
+	assert.Equal(t, jsonBody.Previous, "http://localhost:3000/carriers?pageSize=2&page=1")
 }
 
 func TestGetCarriersHandler_Should_Not_Set_NextLink(t *testing.T) {
