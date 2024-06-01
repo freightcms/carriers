@@ -85,7 +85,6 @@ func CreateCarrierHandler(c *gin.Context) {
 	var carrier models.FreightCarrierModel
 
 	if err := c.ShouldBindBodyWithJSON(&carrier); err != nil {
-		c.Error(err)
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
