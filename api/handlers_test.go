@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -50,7 +51,7 @@ func createMockDb() db.CarrierDb {
 	return &MockCarrierDb{}
 }
 
-func TestGetCarriersHandler_Should_Return_BindingError_With_400_StatusCode(t *testing.T) {
+func Test_GetCarriersHandler_Should_Return_BindingError_With_400_StatusCode(t *testing.T) {
 	// Arrange
 	router := gin.Default()
 	mockDb := createMockDb()
@@ -76,7 +77,7 @@ func TestGetCarriersHandler_Should_Return_BindingError_With_400_StatusCode(t *te
 	assert.NotEqual(t, nil, jsonBody.Error)
 }
 
-func TestGetCarriersHandler_Should_Set_NextLink_In_Response(t *testing.T) {
+func Test_GetCarriersHandler_Should_Set_NextLink_In_Response(t *testing.T) {
 	// Arrange
 	router := gin.Default()
 	mockDb := &MockCarrierDb{
@@ -112,7 +113,7 @@ func TestGetCarriersHandler_Should_Set_NextLink_In_Response(t *testing.T) {
 	assert.Equal(t, jsonBody.Previous, "http://localhost:3000/carriers?pageSize=2&page=1")
 }
 
-func TestGetCarriersHandler_Should_Not_Set_NextLink(t *testing.T) {
+func Test_GetCarriersHandler_Should_Not_Set_NextLink(t *testing.T) {
 	// Arrange
 	router := gin.Default()
 	mockDb := &MockCarrierDb{
@@ -147,7 +148,7 @@ func TestGetCarriersHandler_Should_Not_Set_NextLink(t *testing.T) {
 	assert.Equal(t, "http://localhost:3000/carriers?pageSize=2&page=1", jsonBody.Previous)
 }
 
-func TestGetCarriersHandler_PreviousLink_Should_Be_Empty(t *testing.T) {
+func Test_GetCarriersHandler_PreviousLink_Should_Be_Empty(t *testing.T) {
 	// Arrange
 	router := gin.Default()
 	mockDb := &MockCarrierDb{
@@ -182,7 +183,7 @@ func TestGetCarriersHandler_PreviousLink_Should_Be_Empty(t *testing.T) {
 	assert.Equal(t, "", jsonBody.Previous) // should be no more links since there were less results than requested
 }
 
-func TestGetCarriersHandler_PreviousLink_Should_Be_Not_Empty(t *testing.T) {
+func Test_GetCarriersHandler_PreviousLink_Should_Be_Not_Empty(t *testing.T) {
 	// Arrange
 	router := gin.Default()
 	mockDb := &MockCarrierDb{
@@ -217,7 +218,7 @@ func TestGetCarriersHandler_PreviousLink_Should_Be_Not_Empty(t *testing.T) {
 	assert.Equal(t, "http://localhost:3000/carriers?pageSize=2&page=0", jsonBody.Previous) // should be no more links since there were less results than requested
 }
 
-func TestGetCarriersHandler_Should_Default_PageSize_When_Not_Provided(t *testing.T) {
+func Test_GetCarriersHandler_Should_Default_PageSize_When_Not_Provided(t *testing.T) {
 	// Arrange
 	router := gin.Default()
 	mockDb := &MockCarrierDb{
@@ -250,4 +251,91 @@ func TestGetCarriersHandler_Should_Default_PageSize_When_Not_Provided(t *testing
 	assert.Equal(t, 10, jsonBody.PageSize)
 	assert.Equal(t, "http://localhost:3000/carriers?&page=3", jsonBody.Next)
 	assert.Equal(t, "http://localhost:3000/carriers?&page=1", jsonBody.Previous) // should be no more links since there were less results than requested
+}
+
+func Test_GetCarrierHandler_Should_Have_Status_NotFound_When_Id_Missing_From_Query(t *testing.T) {
+	// arrange
+	writer := httptest.NewRecorder()
+	router := gin.Default()
+	mockDb := &MockCarrierDb{
+		all: func(ctx context.Context) ([]models.FreightCarrierModel, error) {
+			return make([]models.FreightCarrierModel, 11), nil // need to create >10 (the default size) to ensure we get the next link back with the page size of 10
+		},
+		get: func(ctx context.Context, id string) (*models.FreightCarrierModel, error) {
+			return &models.FreightCarrierModel{}, nil
+		},
+	}
+
+	router.Use(func(ctx *gin.Context) {
+		ctx.Set("db", mockDb)
+	})
+
+	router.GET("/carriers/:id", GetCarrierHandler)
+
+	// act
+	req, _ := http.NewRequest(http.MethodGet, "http://localhost:3000/carriers/", nil)
+	router.ServeHTTP(writer, req)
+
+	// assert
+	assert.Equal(t, http.StatusNotFound, writer.Result().StatusCode)
+}
+
+func Test_GetCarrierHandler_Should_Have_StatusInternalServerError(t *testing.T) {
+	// arrange
+	writer := httptest.NewRecorder()
+	router := gin.Default()
+	mockDb := &MockCarrierDb{
+		all: func(ctx context.Context) ([]models.FreightCarrierModel, error) {
+			return make([]models.FreightCarrierModel, 11), nil // need to create >10 (the default size) to ensure we get the next link back with the page size of 10
+		},
+		get: func(ctx context.Context, id string) (*models.FreightCarrierModel, error) {
+			return nil, errors.New("This error should be output in response")
+		},
+	}
+
+	router.Use(func(ctx *gin.Context) {
+		ctx.Set("db", mockDb)
+	})
+
+	router.GET("/carriers/:id", GetCarrierHandler)
+
+	// act
+	req, _ := http.NewRequest(http.MethodGet, "http://localhost:3000/carriers/24325272-c9b4-425a-8316-2b6657aa8bf6", nil)
+	router.ServeHTTP(writer, req)
+
+	jsonBody := &struct {
+		Error string `json:"error"`
+	}{}
+	err := json.NewDecoder(writer.Body).Decode(&jsonBody)
+	assert.Equal(t, nil, err)
+	// assert
+	assert.Equal(t, http.StatusInternalServerError, writer.Result().StatusCode)
+	assert.Equal(t, "This error should be output in response", jsonBody.Error)
+}
+
+func Test_GetCarrierHandler_Should_Have_Status_OK_And_Carrier_Response_Body(t *testing.T) {
+	// arrange
+	router := gin.Default()
+	mockDb := &MockCarrierDb{
+		get: func(ctx context.Context, id string) (*models.FreightCarrierModel, error) {
+			return &models.FreightCarrierModel{
+				ID: "01HZ8TT8D0DMKD12K1YMWP7TF3",
+			}, nil
+		},
+	}
+	router.Use(func(ctx *gin.Context) {
+		ctx.Set("db", mockDb)
+	})
+	router.GET("/carriers/:id", GetCarrierHandler)
+	writer := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "http://localhost:3000/carriers/01HZ8TT8D0DMKD12K1YMWP7TF3", nil)
+
+	// act
+	router.ServeHTTP(writer, req)
+
+	// assert
+	var jsonBody models.FreightCarrierModel
+	json.NewDecoder(writer.Body).Decode(&jsonBody)
+	assert.Equal(t, http.StatusOK, writer.Result().StatusCode)
+	assert.Equal(t, "01HZ8TT8D0DMKD12K1YMWP7TF3", jsonBody.ID)
 }

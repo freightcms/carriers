@@ -64,9 +64,15 @@ func GetCarriersHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+// GetCarrierHandler is a gin request handler for fetching a single Freight Carrier based on their identifier.
+// The rout expects to have the carrier database interface attached to the gin context.
 func GetCarrierHandler(c *gin.Context) {
 	db := c.MustGet("db").(db.CarrierDb)
-	id := c.Query("id")
+	id := c.Param("id")
+	if id == "" {
+		c.Writer.WriteHeader(http.StatusNotFound)
+		return
+	}
 	carrier, err := db.GetCarrier(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -86,7 +92,6 @@ func CreateCarrierHandler(c *gin.Context) {
 	db := c.MustGet("db").(db.CarrierDb)
 
 	if err := db.CreateCarrier(c.Request.Context(), &carrier); err != nil {
-		c.Error(err)
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
