@@ -81,6 +81,10 @@ func GetCarrierHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, carrier)
 }
 
+// CreateCarrierHandler deserializes the POST request body as a FreightCarrierModel. The endpoint attempts to create
+// a new instance of the carrier. If it fails the function is aborted with the error in the response body and a status
+// code of 400. By default the response body does not contain the carrier created. it must be requested
+// calling a GET endpoint later on. The status code 201 Created is returned on success.
 func CreateCarrierHandler(c *gin.Context) {
 	var carrier models.FreightCarrierModel
 
