@@ -89,13 +89,13 @@ func CreateCarrierHandler(c *gin.Context) {
 	var carrier models.FreightCarrierModel
 
 	if err := c.ShouldBindBodyWithJSON(&carrier); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 	db := c.MustGet("db").(db.CarrierDb)
 
 	if err := db.CreateCarrier(c.Request.Context(), &carrier); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 	c.Status(http.StatusCreated)
@@ -105,13 +105,11 @@ func UpdateCarrierHandler(c *gin.Context) {
 	var carrier models.FreightCarrierModel
 	id := c.Param("id")
 	if err := c.ShouldBindBodyWithJSON(&carrier); err != nil {
-		c.Error(err)
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	db := c.Value("db").(db.CarrierDb)
 	if err := db.UpdateCarrier(c.Request.Context(), id, &carrier); err != nil {
-		c.Error(err)
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
