@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -319,4 +320,33 @@ func Test_GetCarrierHandler_Should_Have_Status_OK_And_Carrier_Response_Body(t *t
 	json.NewDecoder(writer.Body).Decode(&jsonBody)
 	assert.Equal(t, http.StatusOK, writer.Result().StatusCode)
 	assert.Equal(t, "01HZ8TT8D0DMKD12K1YMWP7TF3", jsonBody.ID)
+}
+
+func Test_CreateCarrierHandler_Should_Have_Status_400_BadRequest_When_Service_Fails(t *testing.T) {
+	// arrange
+	errBody := &struct {
+		Error error `json:"error"`
+	}{}
+	requestBody := &models.FreightCarrierModel{}
+	body, _ := json.Marshal(requestBody)
+	router := gin.Default()
+	router.Use(func(ctx *gin.Context) {
+		mockDb := MockCarrierDb{
+			create: func(ctx context.Context, carrier *models.FreightCarrierModel) error {
+				return errors.New("this error happened when creating a carrier")
+			},
+		}
+		ctx.Set("db", &mockDb)
+	})
+	router.POST("/carriers", CreateCarrierHandler)
+	req, _ := http.NewRequest(http.MethodPost, "/carriers", bytes.NewReader(body))
+	response := httptest.NewRecorder()
+
+	// act
+	router.ServeHTTP(response, req)
+
+	// assert
+	json.NewDecoder(response.Body).Decode(errBody)
+	assert.Equal(t, http.StatusBadRequest, response.Result().StatusCode)
+	assert.NotEqual(t, nil, errBody.Error)
 }
