@@ -101,9 +101,9 @@ func CreateCarrierHandler(c *gin.Context) {
 		return
 	}
 	db := c.MustGet("db").(db.CarrierDb)
-	validator := c.Value(CreateCarrierValidatorKey).(validators.ValidatorFunc)
+	validator := c.Value(CreateCarrierValidatorKey)
 	if validator != nil {
-		validationErrors := validator(c, &carrier)
+		validationErrors := validator.(validators.ValidatorFunc)(c, &carrier)
 		if len(validationErrors) != 0 {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"validations": gin.H{
@@ -125,12 +125,12 @@ func UpdateCarrierHandler(c *gin.Context) {
 	var carrier models.FreightCarrierModel
 	id := c.Param("id")
 	if err := c.ShouldBindBodyWithJSON(&carrier); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
-	validator := c.Value(UpdateCarrierValidatorKey).(validators.ValidatorFunc)
+	validator := c.Value(UpdateCarrierValidatorKey)
 	if validator != nil {
-		validationErrors := validator(c, &carrier)
+		validationErrors := validator.(validators.ValidatorFunc)(c, &carrier)
 		if len(validationErrors) != 0 {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"validations": gin.H{
@@ -142,7 +142,7 @@ func UpdateCarrierHandler(c *gin.Context) {
 	}
 	db := c.Value("db").(db.CarrierDb)
 	if err := db.UpdateCarrier(c.Request.Context(), id, &carrier); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 	c.Status(http.StatusOK)

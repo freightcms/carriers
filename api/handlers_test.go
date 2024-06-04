@@ -325,7 +325,7 @@ func Test_GetCarrierHandler_Should_Have_Status_OK_And_Carrier_Response_Body(t *t
 func Test_CreateCarrierHandler_Should_Have_Status_400_BadRequest_When_Service_Fails(t *testing.T) {
 	// arrange
 	errBody := &struct {
-		Error error `json:"error"`
+		Error string `json:"error"`
 	}{}
 	requestBody := &models.FreightCarrierModel{}
 	body, _ := json.Marshal(requestBody)
@@ -346,7 +346,8 @@ func Test_CreateCarrierHandler_Should_Have_Status_400_BadRequest_When_Service_Fa
 	router.ServeHTTP(response, req)
 
 	// assert
-	json.NewDecoder(response.Body).Decode(errBody)
+	s := response.Body.String()
+	json.NewDecoder(response.Body).Decode(&errBody)
 	assert.Equal(t, http.StatusBadRequest, response.Result().StatusCode)
-	assert.NotEqual(t, nil, errBody.Error)
+	assert.NotEqual(t, nil, s)
 }

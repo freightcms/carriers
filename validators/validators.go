@@ -9,4 +9,4 @@ type ValidationErrors interface {
 
 // Validator is the interface that can be implemented for schemas or models during initial call for creating, deleting, or updating.
 // Validators can expand a wide range of use cases, form user permissions with passed database context or user principles
-type ValidatorFunc func(ctx context.Context, val interface{}) []ValidationErrors
+type ValidatorFunc func(ctx context.Context, val any) []ValidationErrors
