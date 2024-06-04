@@ -110,6 +110,7 @@ func CreateCarrierHandler(c *gin.Context) {
 					"errors": validationErrors,
 				},
 			})
+			return
 		}
 	}
 
@@ -136,6 +137,7 @@ func UpdateCarrierHandler(c *gin.Context) {
 					"errors": validationErrors,
 				},
 			})
+			return
 		}
 	}
 	db := c.Value("db").(db.CarrierDb)
