@@ -11,6 +11,7 @@ import (
 
 	"github.com/freightcms/carriers/db"
 	"github.com/freightcms/carriers/models"
+	"github.com/freightcms/carriers/validators"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/assert/v2"
 )
@@ -73,7 +74,7 @@ func Test_GetCarriersHandler_Should_Return_BindingError_With_400_StatusCode(t *t
 		Error string `json:"error"`
 	}{}
 	json.NewDecoder(w.Body).Decode(&jsonBody)
-	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
 	assert.NotEqual(t, nil, jsonBody.Error)
 }
 
@@ -350,4 +351,41 @@ func Test_CreateCarrierHandler_Should_Have_Status_400_BadRequest_When_Service_Fa
 	json.NewDecoder(response.Body).Decode(&errBody)
 	assert.Equal(t, http.StatusBadRequest, response.Result().StatusCode)
 	assert.NotEqual(t, nil, s)
+}
+
+func Test_CreateCarrierHandler_Should_Have_Status_400_BadRequest_When_Validation_Fails(t *testing.T) {
+	// arrange
+	errBody := &struct {
+		Validations map[string][]string `json:"validations"`
+	}{}
+	requestBody := &models.FreightCarrierModel{}
+	body, _ := json.Marshal(requestBody)
+	router := gin.Default()
+	router.Use(func(ctx *gin.Context) {
+		mockDb := MockCarrierDb{
+			create: func(ctx context.Context, carrier *models.FreightCarrierModel) error {
+				return nil
+			},
+		}
+		ctx.Set("db", &mockDb)
+	})
+	router.Use(func(ctx *gin.Context) {
+		ctx.Set(string(CreateCarrierValidatorKey), validators.CreateValidatorFunc(func(ctx context.Context, val any) []error {
+			return []error{errors.New("Failed")}
+		}))
+	})
+	router.POST("/carriers", CreateCarrierHandler)
+	req, _ := http.NewRequest(http.MethodPost, "/carriers", bytes.NewReader(body))
+	response := httptest.NewRecorder()
+
+	// act
+	router.ServeHTTP(response, req)
+
+	// assert
+	s := response.Body.String()
+	json.NewDecoder(response.Body).Decode(&errBody)
+	assert.Equal(t, http.StatusBadRequest, response.Result().StatusCode)
+	assert.NotEqual(t, nil, s)
+	assert.Equal(t, 1, len(errBody.Validations["errors"]))
+	assert.Equal(t, "Failed", errBody.Validations["errors"][0])
 }

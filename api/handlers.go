@@ -14,7 +14,13 @@ import (
 type ValidatorKeys string
 
 const (
+	// CreateCarrierValidationKey is the key that should be used for when creating a
+	// validator specifically for when the POST /carriers route is called to create
+	// a new freight carrier
 	CreateCarrierValidatorKey ValidatorKeys = "CreateCarrierValidator"
+	// UpdateCarrierValidatorKey is the key that should be used for when creating a
+	// validator specifically for when the PUT /carriers/:id route is called to update
+	// an existing freight carrier
 	UpdateCarrierValidatorKey ValidatorKeys = "UpdateCarrierValidator"
 )
 
@@ -31,6 +37,14 @@ func GetPaginatedLink(currentUrl string, page, pageSize int) string {
 	return nextLink
 }
 
+func UnwrapError(errors []error) []string {
+	errorStrings := make([]string, len(errors))
+	for i, err := range errors {
+		errorStrings[i] = err.Error()
+	}
+	return errorStrings
+}
+
 // GetCarriersHandler is a handler function that retrieves all carriers from the database.
 // The response is a JSON array of carrier objects.
 //
@@ -40,7 +54,7 @@ func GetCarriersHandler(c *gin.Context) {
 	var query PaginatedQuery
 	if err := c.ShouldBindQuery(&query); err != nil {
 		c.Error(err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	carriers, err := db.GetCarriers(c.Request.Context())
@@ -97,17 +111,19 @@ func CreateCarrierHandler(c *gin.Context) {
 	var carrier models.FreightCarrierModel
 
 	if err := c.ShouldBindBodyWithJSON(&carrier); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 	db := c.MustGet("db").(db.CarrierDb)
-	validator := c.Value(CreateCarrierValidatorKey)
+	validator := c.Value(string(CreateCarrierValidatorKey))
 	if validator != nil {
 		validationErrors := validator.(validators.ValidatorFunc)(c, &carrier)
-		if len(validationErrors) != 0 {
+		if validationErrors != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"validations": gin.H{
-					"errors": validationErrors,
+					"errors": UnwrapError(validationErrors),
 				},
 			})
 			return
@@ -115,7 +131,7 @@ func CreateCarrierHandler(c *gin.Context) {
 	}
 
 	if err := db.CreateCarrier(c.Request.Context(), &carrier); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	c.Status(http.StatusCreated)
@@ -125,7 +141,7 @@ func UpdateCarrierHandler(c *gin.Context) {
 	var carrier models.FreightCarrierModel
 	id := c.Param("id")
 	if err := c.ShouldBindBodyWithJSON(&carrier); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	validator := c.Value(UpdateCarrierValidatorKey)
@@ -134,7 +150,7 @@ func UpdateCarrierHandler(c *gin.Context) {
 		if len(validationErrors) != 0 {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"validations": gin.H{
-					"errors": validationErrors,
+					"errors": UnwrapError(validationErrors),
 				},
 			})
 			return
@@ -142,7 +158,7 @@ func UpdateCarrierHandler(c *gin.Context) {
 	}
 	db := c.Value("db").(db.CarrierDb)
 	if err := db.UpdateCarrier(c.Request.Context(), id, &carrier); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.Status(http.StatusOK)
