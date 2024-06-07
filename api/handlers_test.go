@@ -239,6 +239,36 @@ func Test_GetCarriersHandler_Should_Default_PageSize_When_Not_Provided(t *testin
 	assert.Equal(t, "http://localhost:3000/carriers?&page=1", jsonBody.Previous) // should be no more links since there were less results than requested
 }
 
+func Test_GetCarriersHandler_Should_Have_Status_InternalServerError_When_Database_Call_Fails(t *testing.T) {
+	// Arrange
+	mockDb := &MockCarrierDb{
+		all: func(ctx context.Context) ([]models.FreightCarrierModel, error) {
+			return nil, errors.New("Error that is expected")
+		},
+	}
+	router := gin.Default()
+	router.Use(func(ctx *gin.Context) {
+		ctx.Set("db", mockDb)
+	})
+
+	router.GET("/carriers", GetCarriersHandler)
+	w := httptest.NewRecorder()
+
+	uri := "http://localhost:3000/carriers?&page=2" // don't pass in `pageSize` as the query parameter to check logic
+	req, _ := http.NewRequest(http.MethodGet, uri, nil)
+	req.RequestURI = uri
+	// act
+
+	router.ServeHTTP(w, req)
+
+	// assert
+	jsonBody := &struct {
+		Error string `json:"error"`
+	}{}
+	json.NewDecoder(w.Body).Decode(jsonBody)
+	assert.Equal(t, "Error that is expected", jsonBody.Error)
+}
+
 func Test_GetCarrierHandler_Should_Have_Status_NotFound_When_Id_Missing_From_Query(t *testing.T) {
 	// arrange
 	mockDb := &MockCarrierDb{
