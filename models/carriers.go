@@ -13,12 +13,14 @@ type FreightCarrierModel struct {
 }
 
 type IdentificationCodeModel struct {
-	Code string `json:"Code" bson:"Code"` // the code of the carrier such as MC number, DOT number, SCAC, etc.
-	Type string `json:"Type" bson:"Type"` // the type of the code such as MC, DOT, SCAC, etc.
+	CarrierID string `json:"CarrierID" bson:"CarrierID"` // identifies which freight carrier record belongs to
+	Code      string `json:"Code" bson:"Code"`           // the code of the carrier such as MC number, DOT number, SCAC, etc.
+	Type      string `json:"Type" bson:"Type"`           // the type of the code such as MC, DOT, SCAC, etc.
 }
 
 type FreightCarrierInsuranceModel struct {
 	ID             string `json:"ID" bson:"_id"`
+	CarrierID      string `json:"CarrierID" bson:"CarrierID"`           // freight key to the freight carrier that the insurance data belongs to
 	PolicyHolder   string `json:"PolicyHolder" bson:"PolicyHolder"`     // the name of the policy holder. The person or entity which the insurance policy is issued to.
 	PolicyNumber   string `json:"PolicyNumber" bson:"PolicyNumber"`     // the policy number of the insurance with the policy holder.
 	Insurer        string `json:"Insurer" bson:"Insurer"`               // the name of the insurance company
