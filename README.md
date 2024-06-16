@@ -1,5 +1,14 @@
-# carriers
+# Carriers
+
 Collection of schemas, models, and services for Managing Freight Carriers
+
+## Workspaces
+
+- api
+- db
+- db/mongodb
+- models
+- validators
 
 # Testing
 
