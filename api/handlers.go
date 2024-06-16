@@ -7,7 +7,6 @@ import (
 
 	"github.com/freightcms/carriers/db"
 	"github.com/freightcms/carriers/models"
-	"github.com/freightcms/carriers/validators"
 	"github.com/gin-gonic/gin"
 )
 
@@ -117,19 +116,6 @@ func CreateCarrierHandler(c *gin.Context) {
 		return
 	}
 	db := c.MustGet("db").(db.CarrierDb)
-	validator := c.Value(string(CreateCarrierValidatorKey))
-	if validator != nil {
-		validationErrors := validator.(validators.ValidatorFunc)(c, &carrier)
-		if validationErrors != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"validations": gin.H{
-					"errors": UnwrapError(validationErrors),
-				},
-			})
-			return
-		}
-	}
-
 	if err := db.CreateCarrier(c.Request.Context(), &carrier); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -143,18 +129,6 @@ func UpdateCarrierHandler(c *gin.Context) {
 	if err := c.ShouldBindBodyWithJSON(&carrier); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
-	}
-	validator := c.Value(UpdateCarrierValidatorKey)
-	if validator != nil {
-		validationErrors := validator.(validators.ValidatorFunc)(c, &carrier)
-		if len(validationErrors) != 0 {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"validations": gin.H{
-					"errors": UnwrapError(validationErrors),
-				},
-			})
-			return
-		}
 	}
 	db := c.Value("db").(db.CarrierDb)
 	if err := db.UpdateCarrier(c.Request.Context(), id, &carrier); err != nil {

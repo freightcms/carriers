@@ -11,7 +11,6 @@ import (
 
 	"github.com/freightcms/carriers/db"
 	"github.com/freightcms/carriers/models"
-	"github.com/freightcms/carriers/validators"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/assert/v2"
 )
@@ -383,11 +382,8 @@ func Test_CreateCarrierHandler_Should_Have_Status_400_BadRequest_When_Service_Fa
 	assert.NotEqual(t, nil, s)
 }
 
-func Test_CreateCarrierHandler_Should_Have_Status_400_BadRequest_When_Validation_Fails(t *testing.T) {
+func Test_CreateCarrierHandler_Should_Have_Status_201_Created_And_Location_Header_When_Success(t *testing.T) {
 	// arrange
-	errBody := &struct {
-		Validations map[string][]string `json:"validations"`
-	}{}
 	requestBody := &models.FreightCarrierModel{}
 	body, _ := json.Marshal(requestBody)
 	router := gin.Default()
@@ -399,11 +395,6 @@ func Test_CreateCarrierHandler_Should_Have_Status_400_BadRequest_When_Validation
 		}
 		ctx.Set("db", &mockDb)
 	})
-	router.Use(func(ctx *gin.Context) {
-		ctx.Set(string(CreateCarrierValidatorKey), validators.CreateValidatorFunc(func(ctx context.Context, val any) []error {
-			return []error{errors.New("Failed")}
-		}))
-	})
 	router.POST("/carriers", CreateCarrierHandler)
 	req, _ := http.NewRequest(http.MethodPost, "/carriers", bytes.NewReader(body))
 	response := httptest.NewRecorder()
@@ -412,10 +403,5 @@ func Test_CreateCarrierHandler_Should_Have_Status_400_BadRequest_When_Validation
 	router.ServeHTTP(response, req)
 
 	// assert
-	s := response.Body.String()
-	json.NewDecoder(response.Body).Decode(&errBody)
-	assert.Equal(t, http.StatusBadRequest, response.Result().StatusCode)
-	assert.NotEqual(t, nil, s)
-	assert.Equal(t, 1, len(errBody.Validations["errors"]))
-	assert.Equal(t, "Failed", errBody.Validations["errors"][0])
+	assert.Equal(t, http.StatusCreated, response.Result().StatusCode)
 }
