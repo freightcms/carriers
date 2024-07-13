@@ -4,14 +4,18 @@ import (
 	"context"
 	"os"
 
-	carrierApi "github.com/freightcms/carriers/api"
+	"github.com/freightcms/carriers/api"
 	"github.com/freightcms/carriers/db/mongodb"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		panic(err)
+	}
 	connStr := os.Getenv("CONNECTION_STRING")
 	serverApiVersion := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().ApplyURI(connStr).SetServerAPIOptions(serverApiVersion)
@@ -38,7 +42,7 @@ func main() {
 		ctx.Set("db", appDb)
 		ctx.Next()
 	})
-	carrierApi.CreateRouterGroup(r)
+	api.CreateRouterGroup(r)
 	if err := r.Run(":3000"); err != nil {
 		panic(err)
 	}
