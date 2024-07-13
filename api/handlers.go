@@ -35,7 +35,6 @@ func GetPaginatedLink(currentUrl string, page, pageSize int) string {
 	nextLink = pageSizeRegex.ReplaceAllString(nextLink, fmt.Sprintf("pageSize=%d", pageSize))
 	return nextLink
 }
-
 func UnwrapError(errors []error) []string {
 	errorStrings := make([]string, len(errors))
 	for i, err := range errors {
