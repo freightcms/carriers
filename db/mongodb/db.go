@@ -25,7 +25,7 @@ func CreateCarrierDb(session mongo.Session) db.CarrierDb {
 }
 
 func (c *carrierDb) GetCarriers(ctx context.Context) ([]models.FreightCarrierModel, error) {
-	cursor, err := c.session.Client().Database(c.databaseName).Collection(c.collection).Find(ctx, nil)
+	cursor, err := c.session.Client().Database(c.databaseName).Collection(c.collection).Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}

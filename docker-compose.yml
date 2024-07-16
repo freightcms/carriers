@@ -1,9 +1,4 @@
 services:
-  carriers-api:
-    ports:
-      - 8000:8000
-    environment:
-      CONNECTION_STRING: mongodb://root:example@mongo:27017
   mongo:
       image: mongo
       restart: always

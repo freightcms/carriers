@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"os"
 
 	"github.com/freightcms/carriers/api"
@@ -17,6 +18,7 @@ func main() {
 		panic(err)
 	}
 	connStr := os.Getenv("CONNECTION_STRING")
+	l := log.New(os.Stdin, "carriers: ", log.LstdFlags)
 	serverApiVersion := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().ApplyURI(connStr).SetServerAPIOptions(serverApiVersion)
 	client, err := mongo.Connect(context.Background(), opts)
@@ -43,6 +45,8 @@ func main() {
 		ctx.Next()
 	})
 	api.CreateRouterGroup(r)
+	l.Println("Listening on port 3000")
+	l.Printf("database connnection %s", connStr)
 	if err := r.Run(":3000"); err != nil {
 		panic(err)
 	}

@@ -7,6 +7,7 @@ import (
 
 	"github.com/freightcms/carriers/db"
 	"github.com/freightcms/carriers/models"
+	"github.com/freightcms/carriers/schemas"
 	"github.com/gin-gonic/gin"
 )
 
@@ -106,7 +107,7 @@ func GetCarrierHandler(c *gin.Context) {
 // code of 400. By default the response body does not contain the carrier created. it must be requested
 // calling a GET endpoint later on. The status code 201 Created is returned on success.
 func CreateCarrierHandler(c *gin.Context) {
-	var carrier models.FreightCarrierModel
+	carrier := schemas.CreateFreightCarrier{}
 
 	if err := c.ShouldBindBodyWithJSON(&carrier); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
