@@ -9,9 +9,9 @@ import (
 	"os"
 
 	dotenv "github.com/dotenv-org/godotenvvault"
+	"github.com/freightcms/carriers/db/mongodb"
+	"github.com/freightcms/carriers/web"
 	"github.com/graphql-go/handler"
-	"github.com/squishedfox/webservice-prototype/db/mongodb"
-	"github.com/squishedfox/webservice-prototype/web"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )

@@ -3,9 +3,9 @@ package web
 import (
 	"fmt"
 
+	"github.com/freightcms/carriers/db/mongodb"
+	"github.com/freightcms/carriers/models"
 	"github.com/graphql-go/graphql"
-	"github.com/squishedfox/webservice-prototype/db/mongodb"
-	"github.com/squishedfox/webservice-prototype/models"
 )
 
 var (

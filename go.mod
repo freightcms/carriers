@@ -4,6 +4,7 @@ go 1.22.5
 
 require (
 	github.com/dotenv-org/godotenvvault v0.6.0
+	github.com/graphql-go/graphql v0.8.1
 	github.com/graphql-go/handler v0.2.4
 	github.com/squishedfox/webservice-prototype/db/mongodb v0.0.0-20240827023039-71e3cb300302
 	github.com/squishedfox/webservice-prototype/web v0.0.0-20240827023039-71e3cb300302
@@ -12,7 +13,6 @@ require (
 
 require (
 	github.com/golang/snappy v0.0.4 // indirect
-	github.com/graphql-go/graphql v0.8.1 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect

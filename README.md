@@ -1,10 +1,14 @@
-# webservice-prototype
+# Carriers
 
-A prototype building out with GraphQL, Golang, and MongoDB
+## Summary
 
-## Setup
+Web API (Service) that provides capabilities for managing carrier information and related data such as drivers and compliance information.
 
-### Go work
+## Development
+
+### Setup
+
+#### Go work
 
 ```txt
 go 1.22.5
@@ -18,13 +22,13 @@ use (
 )
 ```
 
-### .env file
+#### .env file
 
 ```dotenv
 MONGO_SERVER=mongodb://root:example@0.0.0.0:27017/
 ```
 
-## Running
+### Running
 
 From the root of the application...
 

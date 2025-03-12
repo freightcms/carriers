@@ -1,9 +1,9 @@
 package web
 
 import (
+	"github.com/freightcms/carriers/db"
+	"github.com/freightcms/carriers/db/mongodb"
 	"github.com/graphql-go/graphql"
-	"github.com/squishedfox/webservice-prototype/db"
-	"github.com/squishedfox/webservice-prototype/db/mongodb"
 )
 
 var (
