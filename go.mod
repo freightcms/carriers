@@ -1,4 +1,4 @@
-module github.com/squishedfox/webservice-prototype
+module github.com/freightcms/carriers
 
 go 1.22.5
 
