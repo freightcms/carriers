@@ -9,6 +9,7 @@ import (
 	"github.com/freightcms/carriers/db"
 	"github.com/freightcms/carriers/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -26,7 +27,7 @@ type resourceManager struct {
 
 // Get implements db.CarrierResourceManager.
 func (r *resourceManager) Get(query *db.CarrierQuery) ([]*models.Carrier, error) {
-	coll := r.session.Client().Database("carriers").Collection("people")
+	coll := r.session.Client().Database("carriers").Collection("carriers")
 
 	projection := bson.D{}
 
@@ -70,7 +71,7 @@ func (r *resourceManager) Get(query *db.CarrierQuery) ([]*models.Carrier, error)
 }
 
 // WithContext fetches the mongo db session context from that passed argument (parent context)
-// ,appends the person manager and returns all with the new context.
+// ,appends the carrier manager and returns all with the new context.
 func WithContext(session mongo.SessionContext) context.Context {
 	if session == nil {
 		panic("Could not fetch session from context")
@@ -90,21 +91,25 @@ func FromContext(ctx context.Context) db.CarrierResourceManager {
 }
 
 // CreateCarrier implements db.CarrierResourceManager.
-func (r *resourceManager) CreateCarrier(person models.Carrier) (interface{}, error) {
-	coll := r.session.Client().Database("graphql_mongo_prototype").Collection("people")
-	insertedResult, err := coll.InsertOne(r.session,
-		&person,
+func (r *resourceManager) CreateCarrier(carrier models.Carrier) (interface{}, error) {
+	insertedResult, err := r.collection().InsertOne(r.session,
+		&bson.M{
+			"firstName": carrier.FirstName,
+			"lastName":  carrier.LastName,
+		},
 		options.InsertOne(),
 	)
 	if err != nil {
 		return nil, err
 	}
-	return insertedResult.InsertedID, nil
+	id := insertedResult.InsertedID.(primitive.ObjectID)
+
+	return id.Hex(), nil
 }
 
 // DeleteCarrier implements db.CarrierResourceManager.
 func (r *resourceManager) DeleteCarrier(id interface{}) error {
-	coll := r.session.Client().Database("graphql_mongo_prototype").Collection("people")
+	coll := r.session.Client().Database("carriers").Collection("carriers")
 	_, err := coll.DeleteOne(r.session, bson.M{"_id": id})
 	return err
 }
@@ -113,7 +118,7 @@ func (r *resourceManager) DeleteCarrier(id interface{}) error {
 func (r *resourceManager) GetById(id interface{}) (*models.Carrier, error) {
 	var result models.Carrier
 	filter := bson.M{"_id": id}
-	coll := r.session.Client().Database("graphql_mongo_prototype").Collection("people")
+	coll := r.session.Client().Database("carriers").Collection("carriers")
 	if err := coll.FindOne(r.session, filter).Decode(&result); err != nil {
 		return nil, err
 	}
@@ -121,9 +126,9 @@ func (r *resourceManager) GetById(id interface{}) (*models.Carrier, error) {
 }
 
 // UpdateCarrier implements db.CarrierResourceManager.
-func (r *resourceManager) UpdateCarrier(id interface{}, person models.Carrier) error {
-	coll := r.session.Client().Database("graphql_mongo_prototype").Collection("people")
-	result, err := coll.UpdateOne(r.session, bson.M{"_id": id}, person)
+func (r *resourceManager) UpdateCarrier(id interface{}, carrier models.Carrier) error {
+	coll := r.session.Client().Database("carriers").Collection("carriers")
+	result, err := coll.UpdateOne(r.session, bson.M{"_id": id}, carrier)
 
 	if result.MatchedCount == 0 {
 		return fmt.Errorf("could not find Carrier with id %s", id)
@@ -133,4 +138,9 @@ func (r *resourceManager) UpdateCarrier(id interface{}, person models.Carrier) e
 
 func NewCarrierManager(session mongo.SessionContext) db.CarrierResourceManager {
 	return &resourceManager{session: session}
+}
+
+func (r *resourceManager) collection() *mongo.Collection {
+	coll := r.session.Client().Database("freightcms").Collection("carriers")
+	return coll
 }

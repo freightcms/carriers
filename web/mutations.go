@@ -34,7 +34,12 @@ var (
 					if err != nil {
 						return nil, err
 					}
-					return id, err
+					resp := struct {
+						ID string `json:"id" bson:"id"`
+					}{
+						ID: id.(string),
+					}
+					return &resp, err
 				},
 			},
 			"deleteCarrier": &graphql.Field{
