@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"reflect"
 	"slices"
 
 	"github.com/freightcms/carriers/db"
@@ -27,8 +28,6 @@ type resourceManager struct {
 
 // Get implements db.CarrierResourceManager.
 func (r *resourceManager) Get(query *db.CarrierQuery) ([]*models.Carrier, error) {
-	coll := r.session.Client().Database("carriers").Collection("carriers")
-
 	projection := bson.D{}
 
 	// see https://www.mongodb.com/docs/drivers/go/current/fundamentals/crud/read-operations/project/
@@ -53,7 +52,7 @@ func (r *resourceManager) Get(query *db.CarrierQuery) ([]*models.Carrier, error)
 		SetSkip(int64((query.Page) * query.PageSize)).
 		SetProjection(projection)
 
-	cursor, err := coll.Find(r.session, bson.D{}, opts)
+	cursor, err := r.collection().Find(r.session, bson.D{}, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -61,13 +60,12 @@ func (r *resourceManager) Get(query *db.CarrierQuery) ([]*models.Carrier, error)
 	for cursor.Next(r.session) {
 		var result models.Carrier
 		if err := cursor.Decode(&result); err != nil {
-			fmt.Printf("Error occured fetching record %s\n", err.Error())
+			fmt.Printf("Error occured fetching Carrier record %s\n", err.Error())
 			continue
 		}
 		results = append(results, &result)
 	}
 	return results, nil
-
 }
 
 // WithContext fetches the mongo db session context from that passed argument (parent context)
@@ -109,17 +107,42 @@ func (r *resourceManager) CreateCarrier(carrier models.Carrier) (interface{}, er
 
 // DeleteCarrier implements db.CarrierResourceManager.
 func (r *resourceManager) DeleteCarrier(id interface{}) error {
-	coll := r.session.Client().Database("carriers").Collection("carriers")
-	_, err := coll.DeleteOne(r.session, bson.M{"_id": id})
+	if reflect.TypeOf(id).Kind() != reflect.String {
+		return fmt.Errorf("cannot use typeof %s as id parameter", reflect.TypeOf(id).String())
+	}
+
+	objectId, err := primitive.ObjectIDFromHex(id.(string))
+	if err != nil {
+		return err
+	}
+
+	if err = r.session.StartTransaction(); err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": objectId}
+	if _, err = r.collection().DeleteOne(r.session, filter); err != nil {
+		return err
+	}
+	err = r.session.CommitTransaction(r.session)
 	return err
 }
 
 // GetById implements db.CarrierResourceManager.
 func (r *resourceManager) GetById(id interface{}) (*models.Carrier, error) {
 	var result models.Carrier
-	filter := bson.M{"_id": id}
-	coll := r.session.Client().Database("carriers").Collection("carriers")
-	if err := coll.FindOne(r.session, filter).Decode(&result); err != nil {
+
+	if reflect.TypeOf(id).Kind() != reflect.String {
+		return nil, fmt.Errorf("cannot use typeof %s as id parameter", reflect.TypeOf(id).String())
+	}
+
+	objectId, err := primitive.ObjectIDFromHex(id.(string))
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.M{"_id": objectId}
+	if err := r.collection().FindOne(r.session, &filter).Decode(&result); err != nil {
 		return nil, err
 	}
 	return &result, nil
@@ -127,8 +150,17 @@ func (r *resourceManager) GetById(id interface{}) (*models.Carrier, error) {
 
 // UpdateCarrier implements db.CarrierResourceManager.
 func (r *resourceManager) UpdateCarrier(id interface{}, carrier models.Carrier) error {
-	coll := r.session.Client().Database("carriers").Collection("carriers")
-	result, err := coll.UpdateOne(r.session, bson.M{"_id": id}, carrier)
+	if reflect.TypeOf(id).Kind() != reflect.String {
+		return fmt.Errorf("cannot use typeof %s as id parameter", reflect.TypeOf(id).String())
+	}
+
+	objectId, err := primitive.ObjectIDFromHex(id.(string))
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": objectId}
+	result, err := r.collection().UpdateOne(r.session, filter, carrier)
 
 	if result.MatchedCount == 0 {
 		return fmt.Errorf("could not find Carrier with id %s", id)
