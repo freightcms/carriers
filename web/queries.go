@@ -10,8 +10,8 @@ var (
 	RootQuery *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 		Name: "RootQuery",
 		Fields: graphql.Fields{
-			"people": &graphql.Field{
-				Type: graphql.NewList(PersonObject),
+			"carriers": &graphql.Field{
+				Type: graphql.NewList(CarrierObject),
 				Args: graphql.FieldConfigArgument{
 					"page": &graphql.ArgumentConfig{
 						Type:         graphql.Int,

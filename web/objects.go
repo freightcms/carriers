@@ -13,8 +13,8 @@ var (
 			},
 		},
 	})
-	PersonObject *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
-		Name: "Person",
+	CarrierObject *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
+		Name: "Carrier",
 		Fields: graphql.Fields{
 			"id": &graphql.Field{
 				Type: graphql.String,

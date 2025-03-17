@@ -13,20 +13,20 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type PersonResourceManagerContextKey string
+type CarrierResourceManagerContextKey string
 
 const (
-	// ContextKey used to fetch or put the Person Resource Manager into the context
-	ContextKey PersonResourceManagerContextKey = "personResourceManagerContextKey"
+	// ContextKey used to fetch or put the Carrier Resource Manager into the context
+	ContextKey CarrierResourceManagerContextKey = "carrierResourceManagerContextKey"
 )
 
 type resourceManager struct {
 	session mongo.SessionContext
 }
 
-// Get implements db.PersonResourceManager.
-func (r *resourceManager) Get(query *db.PeopleQuery) ([]*models.Person, error) {
-	coll := r.session.Client().Database("graphql_mongo_prototype").Collection("people")
+// Get implements db.CarrierResourceManager.
+func (r *resourceManager) Get(query *db.CarrierQuery) ([]*models.Carrier, error) {
+	coll := r.session.Client().Database("carriers").Collection("people")
 
 	projection := bson.D{}
 
@@ -56,9 +56,9 @@ func (r *resourceManager) Get(query *db.PeopleQuery) ([]*models.Person, error) {
 	if err != nil {
 		return nil, err
 	}
-	results := []*models.Person{}
+	results := []*models.Carrier{}
 	for cursor.Next(r.session) {
-		var result models.Person
+		var result models.Carrier
 		if err := cursor.Decode(&result); err != nil {
 			fmt.Printf("Error occured fetching record %s\n", err.Error())
 			continue
@@ -75,22 +75,22 @@ func WithContext(session mongo.SessionContext) context.Context {
 	if session == nil {
 		panic("Could not fetch session from context")
 	}
-	mgr := NewPersonManager(session)
+	mgr := NewCarrierManager(session)
 	return context.WithValue(session, ContextKey, mgr)
 }
 
 // FromContext gets the Resource Manager from the context passsed.
-func FromContext(ctx context.Context) db.PersonResourceManager {
+func FromContext(ctx context.Context) db.CarrierResourceManager {
 	val := ctx.Value(ContextKey)
 	if val == nil {
-		panic(errors.New("could not fetch PersonResourceManager from context"))
+		panic(errors.New("could not fetch CarrierResourceManager from context"))
 	}
 
 	return val.(*resourceManager)
 }
 
-// CreatePerson implements db.PersonResourceManager.
-func (r *resourceManager) CreatePerson(person models.Person) (interface{}, error) {
+// CreateCarrier implements db.CarrierResourceManager.
+func (r *resourceManager) CreateCarrier(person models.Carrier) (interface{}, error) {
 	coll := r.session.Client().Database("graphql_mongo_prototype").Collection("people")
 	insertedResult, err := coll.InsertOne(r.session,
 		&person,
@@ -102,16 +102,16 @@ func (r *resourceManager) CreatePerson(person models.Person) (interface{}, error
 	return insertedResult.InsertedID, nil
 }
 
-// DeletePerson implements db.PersonResourceManager.
-func (r *resourceManager) DeletePerson(id interface{}) error {
+// DeleteCarrier implements db.CarrierResourceManager.
+func (r *resourceManager) DeleteCarrier(id interface{}) error {
 	coll := r.session.Client().Database("graphql_mongo_prototype").Collection("people")
 	_, err := coll.DeleteOne(r.session, bson.M{"_id": id})
 	return err
 }
 
-// GetById implements db.PersonResourceManager.
-func (r *resourceManager) GetById(id interface{}) (*models.Person, error) {
-	var result models.Person
+// GetById implements db.CarrierResourceManager.
+func (r *resourceManager) GetById(id interface{}) (*models.Carrier, error) {
+	var result models.Carrier
 	filter := bson.M{"_id": id}
 	coll := r.session.Client().Database("graphql_mongo_prototype").Collection("people")
 	if err := coll.FindOne(r.session, filter).Decode(&result); err != nil {
@@ -120,17 +120,17 @@ func (r *resourceManager) GetById(id interface{}) (*models.Person, error) {
 	return &result, nil
 }
 
-// UpdatePerson implements db.PersonResourceManager.
-func (r *resourceManager) UpdatePerson(id interface{}, person models.Person) error {
+// UpdateCarrier implements db.CarrierResourceManager.
+func (r *resourceManager) UpdateCarrier(id interface{}, person models.Carrier) error {
 	coll := r.session.Client().Database("graphql_mongo_prototype").Collection("people")
 	result, err := coll.UpdateOne(r.session, bson.M{"_id": id}, person)
 
 	if result.MatchedCount == 0 {
-		return fmt.Errorf("could not find Person with id %s", id)
+		return fmt.Errorf("could not find Carrier with id %s", id)
 	}
 	return err
 }
 
-func NewPersonManager(session mongo.SessionContext) db.PersonResourceManager {
+func NewCarrierManager(session mongo.SessionContext) db.CarrierResourceManager {
 	return &resourceManager{session: session}
 }

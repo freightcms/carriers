@@ -12,9 +12,9 @@ var (
 	Mutations *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 		Name: "mutations",
 		Fields: graphql.Fields{
-			"createPerson": &graphql.Field{
+			"createCarrier": &graphql.Field{
 				Type:        IDObject,
-				Description: "Create new Person",
+				Description: "Create new Carrier",
 				Args: graphql.FieldConfigArgument{
 					"firstName": &graphql.ArgumentConfig{
 						Type: graphql.NewNonNull(graphql.String),
@@ -24,22 +24,22 @@ var (
 					},
 				},
 				Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-					model := models.Person{
+					model := models.Carrier{
 						FirstName: params.Args["firstName"].(string),
 						LastName:  params.Args["lastName"].(string),
 					}
 
 					mgr := mongodb.FromContext(params.Context)
-					id, err := mgr.CreatePerson(model)
+					id, err := mgr.CreateCarrier(model)
 					if err != nil {
 						return nil, err
 					}
 					return id, err
 				},
 			},
-			"deletePerson": &graphql.Field{
+			"deleteCarrier": &graphql.Field{
 				Type:        graphql.Boolean,
-				Description: "Delete an existing Person resource",
+				Description: "Delete an existing Carrier resource",
 				Args: graphql.FieldConfigArgument{
 					"id": &graphql.ArgumentConfig{
 						Type: graphql.NewNonNull(graphql.String),
@@ -47,11 +47,11 @@ var (
 				},
 				Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 					mgr := mongodb.FromContext(params.Context)
-					err := mgr.DeletePerson(params.Args["id"].(string))
+					err := mgr.DeleteCarrier(params.Args["id"].(string))
 					return true, err
 				},
 			},
-			"updatePerson": &graphql.Field{
+			"updateCarrier": &graphql.Field{
 				Type:        graphql.Boolean,
 				Description: "Update an existing person object",
 				Args: graphql.FieldConfigArgument{
@@ -81,12 +81,12 @@ var (
 					if params.Args["lastName"] != nil {
 						p.LastName = params.Args["lastName"].(string)
 					}
-					if err := mgr.UpdatePerson(id, *p); err != nil {
+					if err := mgr.UpdateCarrier(id, *p); err != nil {
 						return nil, err
 					}
 					return true, nil
 				}, // end Resolve
-			}, // ends updatePerson Field type definition
+			}, // ends updateCarrier Field type definition
 		},
 	})
 )
