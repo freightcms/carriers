@@ -11,14 +11,14 @@ Web API (Service) that provides capabilities for managing carrier information an
 #### Go work
 
 ```txt
-go 1.22.5
+go 1.23.4
 
 use (
-    .
-    ./db
-    ./db/mongodb
-    ./models
-    ./web
+	.
+	./db
+	./db/mongodb
+	./models
+	./web
 )
 ```
 
