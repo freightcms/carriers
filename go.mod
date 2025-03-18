@@ -1,9 +1,11 @@
 module github.com/freightcms/carriers
 
-go 1.22.5
+go 1.23.4
 
 require (
 	github.com/dotenv-org/godotenvvault v0.6.0
+	github.com/freightcms/carriers/db/mongodb v0.0.0-20240716003255-564878297511
+	github.com/freightcms/carriers/web v0.0.0-20250318025108-a5fc590ddff2
 	github.com/graphql-go/graphql v0.8.1
 	github.com/graphql-go/handler v0.2.4
 	github.com/squishedfox/webservice-prototype/db/mongodb v0.0.0-20240827023039-71e3cb300302
@@ -11,7 +13,12 @@ require (
 	go.mongodb.org/mongo-driver v1.16.1
 )
 
-require github.com/freightcms/common/models v1.1.0 // indirect
+require (
+	github.com/freightcms/carriers/db v1.1.0 // indirect
+	github.com/freightcms/carriers/models v0.0.0-20240716003255-564878297511 // indirect
+	github.com/freightcms/common/models v1.1.0 // indirect
+	github.com/freightcms/parties/models v1.0.1 // indirect
+)
 
 require (
 	github.com/freightcms/locations/models v1.1.0
