@@ -7,6 +7,9 @@ import (
 	organizationModels "github.com/freightcms/organizations/models"
 )
 
+// TODO: need to support ELD Lookup information for carriers
+// see: https://eld.fmcsa.dot.gov/List
+
 type CarrierIdentifierType string
 
 const (
