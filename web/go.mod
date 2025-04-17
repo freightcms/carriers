@@ -6,12 +6,17 @@ require (
 	github.com/freightcms/carriers/db v1.1.0
 	github.com/freightcms/carriers/db/mongodb v0.0.0-20240716003255-564878297511
 	github.com/freightcms/carriers/models v0.0.0-20240716003255-564878297511
+	github.com/freightcms/common/models v1.1.0
+	github.com/freightcms/organizations/web v0.0.0-20250319134210-79a6e808531e
 	github.com/graphql-go/graphql v0.8.1
 )
 
 require (
-	github.com/freightcms/common/models v1.1.0 // indirect
-	github.com/freightcms/locations/models v1.0.1 // indirect
+	github.com/freightcms/locations/models v1.1.0 // indirect
+	github.com/freightcms/locations/web v1.0.1 // indirect
+	github.com/freightcms/organizations/db v0.0.0-20250319134210-79a6e808531e // indirect
+	github.com/freightcms/organizations/db/mongodb v0.0.0-20250319134210-79a6e808531e // indirect
+	github.com/freightcms/organizations/models v0.0.0-20250319134210-79a6e808531e // indirect
 	github.com/freightcms/parties/models v1.0.1 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect

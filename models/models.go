@@ -41,13 +41,13 @@ type CarrierIdentifier struct {
 // CarrierModel provides an interface for serializing and deserializing
 // against data fetching APIs. Supports `json` and `bson` binding.
 type Carrier struct {
-	organizationModels.Organization
+	*organizationModels.Organization
 	// Whether the carrier is active within a network
-	IsActive bool
+	IsActive bool `json:"isActive" bson:"isActive"`
 	// Insurance provides the different coverages that the carrier may hold as
 	// a way of
 	// covering
-	Insurance []*InsuranceInfo
+	Insurance []*InsuranceInfo `json:"insurance" bson:"insurance"`
 	// Modes provides the modes which are supposed by the Carrier
-	Modes []commonModels.TransportationMode
+	Modes []commonModels.TransportationMode `json:"modes" bson:"modes"`
 }

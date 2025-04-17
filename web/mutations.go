@@ -5,8 +5,21 @@ import (
 
 	"github.com/freightcms/carriers/db/mongodb"
 	"github.com/freightcms/carriers/models"
+	commonModels "github.com/freightcms/common/models"
+	orgWeb "github.com/freightcms/organizations/web"
 	"github.com/graphql-go/graphql"
 )
+
+func mapCreateCarrierParams(params graphql.ResolveParams) models.Carrier {
+	model := models.Carrier{
+		IsActive:     params.Args["isActive"].(bool),
+		Insurance:    []*models.InsuranceInfo{},
+		Modes:        []commonModels.TransportationMode{},
+		Organization: orgWeb.OrganizationFromParams(params),
+	}
+
+	return model
+}
 
 var (
 	Mutations *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
@@ -15,19 +28,9 @@ var (
 			"createCarrier": &graphql.Field{
 				Type:        IDObject,
 				Description: "Create new Carrier",
-				Args: graphql.FieldConfigArgument{
-					"firstName": &graphql.ArgumentConfig{
-						Type: graphql.NewNonNull(graphql.String),
-					},
-					"lastName": &graphql.ArgumentConfig{
-						Type: graphql.NewNonNull(graphql.String),
-					},
-				},
+				Args:        graphql.FieldConfigArgument{},
 				Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-					model := models.Carrier{
-						FirstName: params.Args["firstName"].(string),
-						LastName:  params.Args["lastName"].(string),
-					}
+					model := mapCreateCarrierParams(params)
 
 					mgr := mongodb.FromContext(params.Context)
 					id, err := mgr.CreateCarrier(model)
@@ -53,7 +56,7 @@ var (
 				Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 					mgr := mongodb.FromContext(params.Context)
 					err := mgr.DeleteCarrier(params.Args["id"].(string))
-					return true, err
+					return err != nil, err
 				},
 			},
 			"updateCarrier": &graphql.Field{
@@ -61,12 +64,6 @@ var (
 				Description: "Update an existing person object",
 				Args: graphql.FieldConfigArgument{
 					"id": &graphql.ArgumentConfig{
-						Type: graphql.NewNonNull(graphql.String),
-					},
-					"firstName": &graphql.ArgumentConfig{
-						Type: graphql.NewNonNull(graphql.String),
-					},
-					"lastName": &graphql.ArgumentConfig{
 						Type: graphql.NewNonNull(graphql.String),
 					},
 				}, // ends aarguments
@@ -80,13 +77,8 @@ var (
 					if p == nil {
 						return nil, fmt.Errorf("could not find person with ID %s", id)
 					}
-					if params.Args["firstName"] != nil {
-						p.FirstName = params.Args["firstName"].(string)
-					}
-					if params.Args["lastName"] != nil {
-						p.LastName = params.Args["lastName"].(string)
-					}
-					if err := mgr.UpdateCarrier(id, *p); err != nil {
+					carrier := mapCreateCarrierParams(params)
+					if err := mgr.UpdateCarrier(id, carrier); err != nil {
 						return nil, err
 					}
 					return true, nil
