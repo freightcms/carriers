@@ -6,7 +6,7 @@ import (
 
 func NewSchema() (graphql.Schema, error) {
 	return graphql.NewSchema(graphql.SchemaConfig{
-		Query:    RootQuery,
+		Query:    CarrierQuery,
 		Mutation: Mutations,
 	})
 }

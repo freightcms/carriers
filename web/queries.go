@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	RootQuery *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
-		Name: "RootQuery",
+	CarrierQuery *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
+		Name: "CarrierQuery",
 		Fields: graphql.Fields{
 			"carriers": &graphql.Field{
 				Type: graphql.NewList(CarrierObject),

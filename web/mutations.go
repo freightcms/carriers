@@ -23,7 +23,7 @@ func mapCreateCarrierParams(params graphql.ResolveParams) models.Carrier {
 
 var (
 	Mutations *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
-		Name: "mutations",
+		Name: "CarrierMutations",
 		Fields: graphql.Fields{
 			"createCarrier": &graphql.Field{
 				Type:        IDObject,
