@@ -91,10 +91,7 @@ func FromContext(ctx context.Context) db.CarrierResourceManager {
 // CreateCarrier implements db.CarrierResourceManager.
 func (r *resourceManager) CreateCarrier(carrier models.Carrier) (interface{}, error) {
 	insertedResult, err := r.collection().InsertOne(r.session,
-		&bson.M{
-			"firstName": carrier.FirstName,
-			"lastName":  carrier.LastName,
-		},
+		carrier,
 		options.InsertOne(),
 	)
 	if err != nil {
@@ -165,6 +162,35 @@ func (r *resourceManager) UpdateCarrier(id interface{}, carrier models.Carrier) 
 	if result.MatchedCount == 0 {
 		return fmt.Errorf("could not find Carrier with id %s", id)
 	}
+	return err
+}
+
+func (r *resourceManager) AddIdentifier(id interface{}, identifier models.CarrierIdentifier) error {
+	if reflect.TypeOf(id).Kind() != reflect.String {
+		return fmt.Errorf("cannot use typeof %s as id parameter", reflect.TypeOf(id).String())
+	}
+
+	objectId, err := primitive.ObjectIDFromHex(id.(string))
+	if err != nil {
+		return err
+	}
+
+	// https://www.mongodb.com/docs/manual/reference/operator/aggregation/addFields/#add-element-to-an-array
+	pipeline := bson.D{
+		{"$match", bson.D{
+			{"_id", objectId},
+		}},
+		{"$addFields", bson.D{
+			{"identfiers", bson.D{
+				{"$identifiers", []interface{}{identifier}},
+			}},
+		},
+		},
+	}
+
+	result, err := r.collection().Aggregate(r.session, mongo.Pipeline{pipeline})
+
+	defer result.Close(r.session)
 	return err
 }
 

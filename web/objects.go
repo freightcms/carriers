@@ -54,6 +54,10 @@ var (
 			"id": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.String),
 			},
+			"dba": &graphql.Field{
+				Description: "Doing Business As can be the alias for a company",
+				Type:        graphql.String,
+			},
 			"isActive": &graphql.Field{
 				Description: "Flag for indicating if the carrier is active in the market",
 				Type:        graphql.NewNonNull(graphql.Boolean),

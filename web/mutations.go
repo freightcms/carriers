@@ -21,6 +21,15 @@ func mapCreateCarrierParams(params graphql.ResolveParams) models.Carrier {
 	return model
 }
 
+func mapCarrierIdentifierParams(params graphql.ResolveParams) models.CarrierIdentifier {
+	model := models.CarrierIdentifier{
+		Type:  params.Args["type"].(string),
+		Value: params.Args["value"].(string),
+	}
+
+	return model
+}
+
 var (
 	Mutations *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 		Name: "CarrierMutations",
@@ -84,6 +93,27 @@ var (
 					return true, nil
 				}, // end Resolve
 			}, // ends updateCarrier Field type definition
+			"createIdentifier": &graphql.Field{
+				Type:        graphql.NewNonNull(graphql.Boolean),
+				Description: "Adds an identifier code to the carrier specified",
+				Args: graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type:        graphql.NewNonNull(graphql.String),
+						Description: "Identifier of the carrier to add an identifier to",
+					},
+				},
+				Resolve: func(params graphql.ResolveParams) error {
+					model := mapCarrierIdentifierParams(params)
+
+					if params.Args["id"] == nil {
+						return nil
+					}
+					mgr := mongodb.FromContext(params.Context)
+					err := mgr.AddIdentifier(params.Args["id"], &model)
+
+					return err
+				},
+			},
 		},
 	})
 )

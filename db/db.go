@@ -70,5 +70,8 @@ type CarrierResourceManager interface { // alternatively this can be named to Ca
 	// opperation is cancelled.
 	Get(query *CarrierQuery) ([]*models.Carrier, error)
 
+	// AddIdentifier adds a carrier identifier to the carrier associated with the id. An error is returned if the
+	// carrier does not exist or there is a duplicate identifier with the carrier
+	AddIdentifier(id interface{}, identifier models.CarrierIdentifier) error
 	// TODO: add query availability as well so we can search for resources based on properties
 }
