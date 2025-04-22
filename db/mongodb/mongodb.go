@@ -22,6 +22,18 @@ const (
 	ContextKey CarrierResourceManagerContextKey = "carrierResourceManagerContextKey"
 )
 
+var (
+	jsonToBsonMap map[string]string = make(map[string]string)
+)
+
+func init() {
+	modelType := reflect.TypeOf(models.Carrier{})
+	for i := 0; i < modelType.NumField(); i++ {
+		field := modelType.Field(i)
+		jsonToBsonMap[field.Tag.Get("json")] = field.Tag.Get("bson")
+	}
+}
+
 type resourceManager struct {
 	session mongo.SessionContext
 }
@@ -29,16 +41,17 @@ type resourceManager struct {
 // Get implements db.CarrierResourceManager.
 func (r *resourceManager) Get(query *db.CarrierQuery) ([]*models.Carrier, error) {
 	projection := bson.D{}
-
 	// see https://www.mongodb.com/docs/drivers/go/current/fundamentals/crud/read-operations/project/
-	for _, fieldName := range query.Fields {
+	for jsonKey, bsonKey := range jsonToBsonMap {
 		// for security reasons we only want people to be able to query the objects that they should be able to
-		if slices.Contains([]string{"id", "firstName", "lastName"}, fieldName) {
-			projection = append(projection, bson.E{
-				Key:   fieldName,
-				Value: 1,
-			})
+		tmp := bson.E{
+			Key:   bsonKey,
+			Value: 0,
 		}
+		if slices.Contains(query.Fields, jsonKey) {
+			tmp.Value = 1
+		}
+		projection = append(projection, tmp)
 	}
 	if len(query.SortBy) != 0 {
 		if !slices.Contains([]string{"_id", "id"}, query.SortBy) {
