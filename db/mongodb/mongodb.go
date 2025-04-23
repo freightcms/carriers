@@ -38,8 +38,7 @@ type resourceManager struct {
 	session mongo.SessionContext
 }
 
-// Get implements db.CarrierResourceManager.
-func (r *resourceManager) Get(query *db.CarrierQuery) ([]*models.Carrier, error) {
+func (r *resourceManager) getProjection(fields []string) bson.D {
 	projection := bson.D{}
 	// see https://www.mongodb.com/docs/drivers/go/current/fundamentals/crud/read-operations/project/
 	for jsonKey, bsonKey := range jsonToBsonMap {
@@ -48,16 +47,22 @@ func (r *resourceManager) Get(query *db.CarrierQuery) ([]*models.Carrier, error)
 			Key:   bsonKey,
 			Value: 0,
 		}
-		if slices.Contains(query.Fields, jsonKey) {
+		if slices.Contains(fields, jsonKey) {
 			tmp.Value = 1
 		}
 		projection = append(projection, tmp)
 	}
+	return projection
+}
+
+// Get implements db.CarrierResourceManager.
+func (r *resourceManager) Get(query *db.CarrierQuery) ([]*models.Carrier, error) {
 	if len(query.SortBy) != 0 {
 		if !slices.Contains([]string{"_id", "id"}, query.SortBy) {
 			return nil, fmt.Errorf("%s is not a valid sortBy option", query.SortBy)
 		}
 	}
+	projection := r.getProjection(query.Fields)
 	sort := bson.D{bson.E{Key: query.SortBy, Value: 1}}
 	opts := options.Find().
 		SetSort(sort).
