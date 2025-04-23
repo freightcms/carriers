@@ -193,23 +193,19 @@ func (r *resourceManager) AddIdentifier(id interface{}, identifier models.Carrie
 		return err
 	}
 
-	// https://www.mongodb.com/docs/manual/reference/operator/aggregation/addFields/#add-element-to-an-array
-	pipeline := bson.D{
-		{"$match", bson.D{
-			{"_id", objectId},
+	filter := bson.D{
+		{"_id", objectId},
+	}
+	update := bson.D{
+		bson.D{{"$addFields", bson.D{{
+			"identifiers", identifier,
 		}},
-		{"$addFields", bson.D{
-			{"identfiers", bson.D{
-				{"$identifiers", []interface{}{identifier}},
-			}},
-		},
-		},
+		}},
 	}
 
-	result, err := r.collection().Aggregate(r.session, mongo.Pipeline{pipeline})
+	result := r.collection().FindOneAndUpdate(r.session, filter, update)
 
-	defer result.Close(r.session)
-	return err
+	return result.Err()
 }
 
 func NewCarrierManager(session mongo.SessionContext) db.CarrierResourceManager {
