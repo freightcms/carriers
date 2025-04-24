@@ -31,89 +31,108 @@ func mapCarrierIdentifierParams(params graphql.ResolveParams) models.CarrierIden
 }
 
 var (
+	createCarrierMutation = &graphql.Field{
+		Type:        IDObject,
+		Description: "Create new Carrier",
+		Args:        graphql.FieldConfigArgument{},
+		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+			model := mapCreateCarrierParams(params)
+
+			mgr := mongodb.FromContext(params.Context)
+			id, err := mgr.CreateCarrier(model)
+			if err != nil {
+				return nil, err
+			}
+			resp := struct {
+				ID string `json:"id" bson:"id"`
+			}{
+				ID: id.(string),
+			}
+			return &resp, err
+		},
+	}
+	deleteCarrierMutation = &graphql.Field{
+		Type:        graphql.Boolean,
+		Description: "Delete an existing Carrier resource",
+		Args: graphql.FieldConfigArgument{
+			"id": &graphql.ArgumentConfig{
+				Type: graphql.NewNonNull(graphql.String),
+			},
+		},
+		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+			mgr := mongodb.FromContext(params.Context)
+			err := mgr.DeleteCarrier(params.Args["id"].(string))
+			return err != nil, err
+		},
+	}
+	updateCarrierMutation = &graphql.Field{
+		Type:        graphql.Boolean,
+		Description: "Update an existing person object",
+		Args: graphql.FieldConfigArgument{
+			"id": &graphql.ArgumentConfig{
+				Type: graphql.NewNonNull(graphql.String),
+			},
+		}, // ends aarguments
+		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+			mgr := mongodb.FromContext(params.Context)
+			id := params.Args["id"]
+			p, err := mgr.GetById(id)
+			if err != nil {
+				return nil, err
+			}
+			if p == nil {
+				return nil, fmt.Errorf("could not find person with ID %s", id)
+			}
+			carrier := mapCreateCarrierParams(params)
+			if err := mgr.UpdateCarrier(id, carrier); err != nil {
+				return nil, err
+			}
+			return true, nil
+		}, // end Resolve
+	} // ends updateCarrier Field type definition
+	createCarrierIdentifierMutation = &graphql.Field{
+		Type:        graphql.NewNonNull(graphql.Boolean),
+		Description: "Adds an identifier code to the carrier specified",
+		Args: graphql.FieldConfigArgument{
+			"id": &graphql.ArgumentConfig{
+				Type:        graphql.NewNonNull(graphql.String),
+				Description: "Identifier of the carrier to add an identifier to",
+			},
+		},
+		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+			model := mapCarrierIdentifierParams(params)
+
+			if params.Args["id"] == nil {
+				return false, nil
+			}
+			mgr := mongodb.FromContext(params.Context)
+			err := mgr.AddIdentifier(params.Args["id"], model)
+
+			return err != nil, err
+		},
+	}
+	deleteCarrierIdentifier = &graphql.Field{
+		Type:        graphql.NewNonNull(graphql.Boolean),
+		Description: "Deletes an identifier and returns a boolean. True if was deleted, else false if not found",
+		Args: graphql.FieldConfigArgument{
+			"id": &graphql.ArgumentConfig{
+				Type:        graphql.NewNonNull(graphql.String),
+				Description: "ID of the carrier the Identifier belongs to",
+			},
+			"type": &graphql.ArgumentConfig{
+				Type:        graphql.NewNonNull(graphql.String),
+				Description: "Type of identifier to delete",
+			},
+		},
+	}
 	Mutations *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 		Name: "CarrierMutations",
 		Fields: graphql.Fields{
-			"createCarrier": &graphql.Field{
-				Type:        IDObject,
-				Description: "Create new Carrier",
-				Args:        graphql.FieldConfigArgument{},
-				Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-					model := mapCreateCarrierParams(params)
-
-					mgr := mongodb.FromContext(params.Context)
-					id, err := mgr.CreateCarrier(model)
-					if err != nil {
-						return nil, err
-					}
-					resp := struct {
-						ID string `json:"id" bson:"id"`
-					}{
-						ID: id.(string),
-					}
-					return &resp, err
-				},
-			},
-			"deleteCarrier": &graphql.Field{
-				Type:        graphql.Boolean,
-				Description: "Delete an existing Carrier resource",
-				Args: graphql.FieldConfigArgument{
-					"id": &graphql.ArgumentConfig{
-						Type: graphql.NewNonNull(graphql.String),
-					},
-				},
-				Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-					mgr := mongodb.FromContext(params.Context)
-					err := mgr.DeleteCarrier(params.Args["id"].(string))
-					return err != nil, err
-				},
-			},
-			"updateCarrier": &graphql.Field{
-				Type:        graphql.Boolean,
-				Description: "Update an existing person object",
-				Args: graphql.FieldConfigArgument{
-					"id": &graphql.ArgumentConfig{
-						Type: graphql.NewNonNull(graphql.String),
-					},
-				}, // ends aarguments
-				Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-					mgr := mongodb.FromContext(params.Context)
-					id := params.Args["id"]
-					p, err := mgr.GetById(id)
-					if err != nil {
-						return nil, err
-					}
-					if p == nil {
-						return nil, fmt.Errorf("could not find person with ID %s", id)
-					}
-					carrier := mapCreateCarrierParams(params)
-					if err := mgr.UpdateCarrier(id, carrier); err != nil {
-						return nil, err
-					}
-					return true, nil
-				}, // end Resolve
-			}, // ends updateCarrier Field type definition
-			"createIdentifier": &graphql.Field{
-				Type:        graphql.NewNonNull(graphql.Boolean),
-				Description: "Adds an identifier code to the carrier specified",
-				Args: graphql.FieldConfigArgument{
-					"id": &graphql.ArgumentConfig{
-						Type:        graphql.NewNonNull(graphql.String),
-						Description: "Identifier of the carrier to add an identifier to",
-					},
-				},
-				Resolve: func(params graphql.ResolveParams) error {
-					model := mapCarrierIdentifierParams(params)
-
-					if params.Args["id"] == nil {
-						return nil
-					}
-					mgr := mongodb.FromContext(params.Context)
-					err := mgr.AddIdentifier(params.Args["id"], &model)
-
-					return err
-				},
-			},
+			"createCarrier":    createCarrierMutation,
+			"deleteCarrier":    deleteCarrierMutation,
+			"updateCarrier":    updateCarrierMutation,
+			"createIdentifier": createCarrierIdentifierMutation,
+			"deleteIdentifier": deleteCarrierIdentifier,
 		},
 	})
 )
