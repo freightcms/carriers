@@ -9,6 +9,7 @@ import (
 
 	"github.com/freightcms/carriers/db"
 	"github.com/freightcms/carriers/models"
+	organizationModels "github.com/freightcms/organizations/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -32,6 +33,12 @@ func init() {
 		field := modelType.Field(i)
 		jsonToBsonMap[field.Tag.Get("json")] = field.Tag.Get("bson")
 	}
+	orgModelType := reflect.TypeOf(organizationModels.Organization{})
+	for i := 0; i < orgModelType.NumField(); i++ {
+		field := orgModelType.Field(i)
+		jsonToBsonMap[field.Tag.Get("json")] = field.Tag.Get("bson")
+	}
+	delete(jsonToBsonMap, "")
 }
 
 type resourceManager struct {
@@ -197,10 +204,10 @@ func (r *resourceManager) AddIdentifier(id interface{}, identifier models.Carrie
 		{"_id", objectId},
 	}
 	update := bson.D{
-		bson.D{{"$addFields", bson.D{{
-			"identifiers", identifier,
-		}},
-		}},
+		//bson.D{{"$addFields", bson.D{{
+		//	"identifiers", identifier,
+		//}},
+		//}},
 	}
 
 	result := r.collection().FindOneAndUpdate(r.session, filter, update)

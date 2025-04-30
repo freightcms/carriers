@@ -84,6 +84,6 @@ func main() {
 	})
 	fmt.Println("Done")
 	hostname := fmt.Sprintf("%v:%d", host, port)
-	fmt.Printf("Start server at %s", hostname)
+	fmt.Printf("Start server at %s\n", hostname)
 	http.ListenAndServe(hostname, server)
 }
