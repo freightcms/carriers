@@ -54,7 +54,7 @@ func selectedFieldsFromSelections(params graphql.ResolveParams, selections []ast
 }
 
 var (
-	CarrierQuery *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
+	CarrierQuery = graphql.NewObject(graphql.ObjectConfig{
 		Name: "CarrierQuery",
 		Fields: graphql.Fields{
 			"carriers": &graphql.Field{
