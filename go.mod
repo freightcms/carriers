@@ -4,17 +4,16 @@ go 1.23.4
 
 require (
 	github.com/dotenv-org/godotenvvault v0.6.0
-	github.com/freightcms/carriers/db/mongodb v0.0.0-20250420005440-8a350143025b
-	github.com/freightcms/carriers/web v0.0.0-20250420005440-8a350143025b
+	github.com/freightcms/carriers/db/mongodb v0.0.0-20250430023538-5a9efc48c5d9
+	github.com/freightcms/carriers/web v0.0.0-20250430023538-5a9efc48c5d9
 	github.com/graphql-go/handler v0.2.4
 	go.mongodb.org/mongo-driver v1.17.3
 )
 
 require (
 	github.com/freightcms/carriers/db v1.1.0 // indirect
-	github.com/freightcms/carriers/models v0.0.0-20250420005440-8a350143025b // indirect
+	github.com/freightcms/carriers/models v0.0.0-20250430023538-5a9efc48c5d9 // indirect
 	github.com/freightcms/common/models v1.1.0 // indirect
-	github.com/freightcms/parties/models v1.0.1 // indirect
 	github.com/graphql-go/graphql v0.8.1 // indirect
 )
 
