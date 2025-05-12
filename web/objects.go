@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	InsuranceObject *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
+	InsuranceObject = graphql.NewObject(graphql.ObjectConfig{
 		Name: "Insurance",
 		Fields: graphql.Fields{
 			"policyProvider": &graphql.Field{
@@ -29,7 +29,7 @@ var (
 			},
 		},
 	})
-	IDObject *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
+	IDObject = graphql.NewObject(graphql.ObjectConfig{
 		Name: "ID",
 		Fields: graphql.Fields{
 			"id": &graphql.Field{
@@ -38,7 +38,7 @@ var (
 		},
 	})
 	CarrierIdentifierObject = graphql.NewObject(graphql.ObjectConfig{
-		Name: "Carrier Identifiers",
+		Name: "CarrierIdentifiers",
 		Fields: graphql.Fields{
 			"type": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.String),
@@ -48,7 +48,7 @@ var (
 			},
 		},
 	})
-	CarrierObject *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
+	CarrierObject = graphql.NewObject(graphql.ObjectConfig{
 		Name: "Carrier",
 		Fields: graphql.Fields{
 			"id": &graphql.Field{

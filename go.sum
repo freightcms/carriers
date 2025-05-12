@@ -6,10 +6,16 @@ github.com/freightcms/carriers/db v1.1.0 h1:58gMqW1R8swku9rRdl8nPvIe0d2R//I/61zV
 github.com/freightcms/carriers/db v1.1.0/go.mod h1:QDtLJxFPqOzHvZIpTaJFc5s1FMstc7D7PUlEA9thKCo=
 github.com/freightcms/carriers/db/mongodb v0.0.0-20250420005440-8a350143025b h1:28ZjReGGb58TO3iJPicg6oVIIuFeJG3ySAdlpaqxGd0=
 github.com/freightcms/carriers/db/mongodb v0.0.0-20250420005440-8a350143025b/go.mod h1:ZHuF9RzHWDDxUshZc1RhpondU32GMlw8RuQ4C60iTHw=
+github.com/freightcms/carriers/db/mongodb v0.0.0-20250430023538-5a9efc48c5d9 h1:ZQHSd94WRgn1IZs4RUhM1PzDkNhyLhzz+1JkW1ar3Kw=
+github.com/freightcms/carriers/db/mongodb v0.0.0-20250430023538-5a9efc48c5d9/go.mod h1:/WN41lhkQac1MMMYAA9k2NpSy4mby4OOmr99nOAqTDA=
 github.com/freightcms/carriers/models v0.0.0-20250420005440-8a350143025b h1:vDOfLa16BspqEscQsYE/JgByN8CFhdSIawnexnT6Wjg=
 github.com/freightcms/carriers/models v0.0.0-20250420005440-8a350143025b/go.mod h1:XetEawi5P52QTgjPNndiQglzKwcIPcSqjrQzb26gYWc=
+github.com/freightcms/carriers/models v0.0.0-20250430023538-5a9efc48c5d9 h1:17O/G4YQGYv0mKQA2OOAWRArumpIpYmAvKC8iGNQ4Y8=
+github.com/freightcms/carriers/models v0.0.0-20250430023538-5a9efc48c5d9/go.mod h1:XetEawi5P52QTgjPNndiQglzKwcIPcSqjrQzb26gYWc=
 github.com/freightcms/carriers/web v0.0.0-20250420005440-8a350143025b h1:c610MtT+eow8/2y/UJz758XSw+4AuHO7eqGWlcyECtA=
 github.com/freightcms/carriers/web v0.0.0-20250420005440-8a350143025b/go.mod h1:QZ6oSzV4sLyHuUwdYnppEis/apicVlHwRAxDKmr1yWI=
+github.com/freightcms/carriers/web v0.0.0-20250430023538-5a9efc48c5d9 h1:sS6MzpSJRHNrMUn3UcgegB+F2NQTCESzzx7upL7fRp8=
+github.com/freightcms/carriers/web v0.0.0-20250430023538-5a9efc48c5d9/go.mod h1:QZ6oSzV4sLyHuUwdYnppEis/apicVlHwRAxDKmr1yWI=
 github.com/freightcms/common/models v1.1.0 h1:NbujQ45NUDck6tR3ZC79JFz5xclWGkX086FNyRbTy/Y=
 github.com/freightcms/common/models v1.1.0/go.mod h1:EgclrPIgkbQ6ZpraNVO2h3mU7S9IniQB+Wb2gT3a508=
 github.com/freightcms/locations/models v1.1.0 h1:ikfH2gRj7pxCERuhh0Nq4Yvyrl/RlrgIMnfvy7qRzfk=
