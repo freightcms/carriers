@@ -14,7 +14,6 @@ require (
 	github.com/freightcms/carriers/db v1.1.0 // indirect
 	github.com/freightcms/carriers/models v0.0.0-20250420005440-8a350143025b // indirect
 	github.com/freightcms/common/models v1.1.0 // indirect
-	github.com/freightcms/parties/models v1.0.1 // indirect
 	github.com/graphql-go/graphql v0.8.1 // indirect
 )
 
