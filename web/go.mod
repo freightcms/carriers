@@ -32,3 +32,7 @@ require (
 )
 
 replace github.com/freightcms/carriers/models => ../models
+
+replace github.com/freightcms/carriers/db => ../db
+
+replace github.com/freightcms/carriers/db/mongodb => ../db/mongodb
