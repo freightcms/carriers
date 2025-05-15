@@ -35,7 +35,7 @@ var (
 		Type:        IDObject,
 		Description: "Create new Carrier",
 		Args:        graphql.FieldConfigArgument{},
-		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+		Resolve: func(params graphql.ResolveParams) (any, error) {
 			model := mapCreateCarrierParams(params)
 
 			mgr := mongodb.FromContext(params.Context)
@@ -99,7 +99,7 @@ var (
 				Description: "Identifier of the carrier to add an identifier to",
 			},
 		},
-		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+		Resolve: func(params graphql.ResolveParams) (any, error) {
 			model := mapCarrierIdentifierParams(params)
 
 			if params.Args["id"] == nil {

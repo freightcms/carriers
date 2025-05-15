@@ -31,7 +31,7 @@ var (
 				DefaultValue: "_id",
 			},
 		},
-		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+		Resolve: func(p graphql.ResolveParams) (any, error) {
 			mgr := mongodb.FromContext(p.Context)
 			q := db.NewQuery()
 			if p.Args["page"] != nil {
