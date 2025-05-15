@@ -36,3 +36,11 @@ require (
 	golang.org/x/sync v0.13.0 // indirect
 	golang.org/x/text v0.24.0 // indirect
 )
+
+replace github.com/freightcms/models => ./models
+
+replace github.com/freightcms/db => ./db
+
+replace github.com/freightcms/db/mongodb => ./db/mongodb
+
+replace github.com/freightcms/web => ./web

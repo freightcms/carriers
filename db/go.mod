@@ -9,3 +9,7 @@ require (
 	github.com/freightcms/locations/models v1.1.0 // indirect
 	github.com/freightcms/parties/models v1.0.1 // indirect
 )
+
+replace github.com/freightcms/db/mongodb => ./mongodb
+
+replace github.com/freightcms/db/models => ../models
