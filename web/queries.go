@@ -1,8 +1,6 @@
 package web
 
 import (
-	"github.com/freightcms/carriers/db"
-	"github.com/freightcms/carriers/db/mongodb"
 	"github.com/graphql-go/graphql"
 )
 

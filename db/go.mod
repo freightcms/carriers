@@ -10,6 +10,6 @@ require (
 	github.com/freightcms/parties/models v1.0.1 // indirect
 )
 
-replace github.com/freightcms/db/mongodb => ./mongodb
+replace github.com/freightcms/carriers/db/mongodb => ./mongodb
 
-replace github.com/freightcms/db/models => ../models
+replace github.com/freightcms/carriers/db/models => ../models
