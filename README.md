@@ -8,6 +8,14 @@ Web API (Service) that provides capabilities for managing carrier information an
 
 ### Setup
 
+#### MongoDB
+install mongodb and run https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-debian/
+
+`sudo systemctl start mongod` starts the server
+`sudo systemctl daemon-relate` restarts and reinitializes the service
+
+Additional Commands can be found at https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-debian/#start-mongodb
+
 #### Go work
 
 ```txt
