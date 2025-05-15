@@ -4,5 +4,9 @@ github.com/freightcms/common/models v1.1.0 h1:NbujQ45NUDck6tR3ZC79JFz5xclWGkX086
 github.com/freightcms/common/models v1.1.0/go.mod h1:EgclrPIgkbQ6ZpraNVO2h3mU7S9IniQB+Wb2gT3a508=
 github.com/freightcms/locations/models v1.0.1 h1:7hgHmuUYxIn162b+LlVoKdguZavXhaI6fGmipf49e8U=
 github.com/freightcms/locations/models v1.0.1/go.mod h1:6TNLzYhKFVvkEui2b8/1o8TZNdOs1TtwcWCFIoClJi4=
+github.com/freightcms/locations/models v1.1.0 h1:ikfH2gRj7pxCERuhh0Nq4Yvyrl/RlrgIMnfvy7qRzfk=
+github.com/freightcms/locations/models v1.1.0/go.mod h1:90bnwGKbUNDT/hoLAV5DTvw+allCdbDYHeQXLElE914=
+github.com/freightcms/organizations/models v0.0.0-20250319134210-79a6e808531e h1:c4uF4EK0nBUbyjd0ichNqIlTKws1zeRJ2VgbTNVAFwg=
+github.com/freightcms/organizations/models v0.0.0-20250319134210-79a6e808531e/go.mod h1:dUuZ78jDvgHAGIzL6dEEqth2CUEJ+4iyr2a3yPGuXYk=
 github.com/freightcms/parties/models v1.0.1 h1:24AMMnUIAYAg/7rMx1GnZoaqt1YR9ugFGrgQU9UT0Vo=
 github.com/freightcms/parties/models v1.0.1/go.mod h1:x1CHRldHMQUQBnkZeZwxmYKIjBkunwynmKUocBVNSck=

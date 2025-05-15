@@ -4,7 +4,7 @@ go 1.23.4
 
 require (
 	github.com/freightcms/carriers/db v1.1.0
-	github.com/freightcms/carriers/models v0.0.0-20250420005440-8a350143025b
+	github.com/freightcms/carriers/models v0.0.0-20250515201019-999a2e521f36
 	go.mongodb.org/mongo-driver v1.17.3
 )
 
@@ -26,4 +26,4 @@ require (
 
 replace github.com/freightcms/carriers/models => ../../models
 
-replace github.com/freightcms/carriers/db => ../db
+replace github.com/freightcms/carriers/db => ../

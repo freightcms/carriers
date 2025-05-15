@@ -12,7 +12,7 @@ require (
 
 require (
 	github.com/freightcms/carriers/db v1.1.0 // indirect
-	github.com/freightcms/carriers/models v0.0.0-20250515175618-20ea3c516410 // indirect
+	github.com/freightcms/carriers/models v0.0.0-20250515201019-999a2e521f36 // indirect
 	github.com/freightcms/common/models v1.1.0 // indirect
 	github.com/graphql-go/graphql v0.8.1 // indirect
 )
