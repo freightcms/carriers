@@ -3,7 +3,7 @@ package db
 import "github.com/freightcms/carriers/models"
 
 type CarrierQuery struct {
-	// Page to start sorting by. Indexing at 1
+	// Page to start sorting by. Indexing at 0
 	Page int
 	// PageSize tells the query how many results to return based on search criteria
 	PageSize int
@@ -50,28 +50,28 @@ type CarrierResourceManager interface { // alternatively this can be named to Ca
 	// CreateCarrier function puts a new person resource into the database and returns the ID of the newly
 	// created Carrier Resource. if there is an error while attempting to create the Carrier resource it is
 	// returned with a nil for the ID.
-	CreateCarrier(person models.Carrier) (interface{}, error)
+	CreateCarrier(person models.Carrier) (any, error)
 
 	// DeleteCarrier deletes a Carrier resource from the target database system. If there is an error attempting
 	// to delete the resource the error is returned. If the resource does not exist no error is returned.
-	DeleteCarrier(id interface{}) error
+	DeleteCarrier(id any) error
 
 	// UpdateCarrier modifies and updates a person resource. If there is an error attempting to update the
 	// resource or a resource could not be found an error is returned.
-	UpdateCarrier(id interface{}, person models.Carrier) error
+	UpdateCarrier(id any, person models.Carrier) error
 
 	// GetById fetches a Carrier resource by it's identifier. If no resource is found then nil, nil is returned
 	// as a successfully "failed" attempt. If there is an issue communicating with the database system the error
 	// is returned and nil for the resource.
-	GetById(id interface{}) (*models.Carrier, error)
+	GetById(id any) (*models.Carrier, error)
 
 	// Get fetches all Carrier resources from target database/resource storage. If none are found an empty slice
 	// is returned. If there is an error fetching one or more recrods the error is immediately returned at the
 	// opperation is cancelled.
-	Get(query *CarrierQuery) ([]*models.Carrier, error)
+	Get(query *CarrierQuery) ([]*models.Carrier, int64, error)
 
 	// AddIdentifier adds a carrier identifier to the carrier associated with the id. An error is returned if the
 	// carrier does not exist or there is a duplicate identifier with the carrier
-	AddIdentifier(id interface{}, identifier models.CarrierIdentifier) error
+	AddIdentifier(id any, identifier models.CarrierIdentifier) error
 	// TODO: add query availability as well so we can search for resources based on properties
 }

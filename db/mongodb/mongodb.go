@@ -29,12 +29,12 @@ var (
 
 func init() {
 	modelType := reflect.TypeOf(models.Carrier{})
-	for i := 0; i < modelType.NumField(); i++ {
+	for i := range modelType.NumField() {
 		field := modelType.Field(i)
 		jsonToBsonMap[field.Tag.Get("json")] = field.Tag.Get("bson")
 	}
 	orgModelType := reflect.TypeOf(organizationModels.Organization{})
-	for i := 0; i < orgModelType.NumField(); i++ {
+	for i := range orgModelType.NumField() {
 		field := orgModelType.Field(i)
 		jsonToBsonMap[field.Tag.Get("json")] = field.Tag.Get("bson")
 	}
@@ -63,10 +63,10 @@ func (r *resourceManager) getProjection(fields []string) bson.D {
 }
 
 // Get implements db.CarrierResourceManager.
-func (r *resourceManager) Get(query *db.CarrierQuery) ([]*models.Carrier, error) {
+func (r *resourceManager) Get(query *db.CarrierQuery) ([]*models.Carrier, int64, error) {
 	if len(query.SortBy) != 0 {
 		if !slices.Contains([]string{"_id", "id"}, query.SortBy) {
-			return nil, fmt.Errorf("%s is not a valid sortBy option", query.SortBy)
+			return nil, 0, fmt.Errorf("%s is not a valid sortBy option", query.SortBy)
 		}
 	}
 	projection := r.getProjection(query.Fields)
@@ -79,7 +79,7 @@ func (r *resourceManager) Get(query *db.CarrierQuery) ([]*models.Carrier, error)
 
 	cursor, err := r.collection().Find(r.session, bson.D{}, opts)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	results := []*models.Carrier{}
 	for cursor.Next(r.session) {
@@ -90,7 +90,12 @@ func (r *resourceManager) Get(query *db.CarrierQuery) ([]*models.Carrier, error)
 		}
 		results = append(results, &result)
 	}
-	return results, nil
+
+	count, err := r.collection().CountDocuments(context.TODO(), bson.D{})
+	if err != nil {
+		return nil, 0, err
+	}
+	return results, count, nil
 }
 
 // WithContext fetches the mongo db session context from that passed argument (parent context)
@@ -114,7 +119,7 @@ func FromContext(ctx context.Context) db.CarrierResourceManager {
 }
 
 // CreateCarrier implements db.CarrierResourceManager.
-func (r *resourceManager) CreateCarrier(carrier models.Carrier) (interface{}, error) {
+func (r *resourceManager) CreateCarrier(carrier models.Carrier) (any, error) {
 	insertedResult, err := r.collection().InsertOne(r.session,
 		carrier,
 		options.InsertOne(),
@@ -128,7 +133,7 @@ func (r *resourceManager) CreateCarrier(carrier models.Carrier) (interface{}, er
 }
 
 // DeleteCarrier implements db.CarrierResourceManager.
-func (r *resourceManager) DeleteCarrier(id interface{}) error {
+func (r *resourceManager) DeleteCarrier(id any) error {
 	if reflect.TypeOf(id).Kind() != reflect.String {
 		return fmt.Errorf("cannot use typeof %s as id parameter", reflect.TypeOf(id).String())
 	}
@@ -151,7 +156,7 @@ func (r *resourceManager) DeleteCarrier(id interface{}) error {
 }
 
 // GetById implements db.CarrierResourceManager.
-func (r *resourceManager) GetById(id interface{}) (*models.Carrier, error) {
+func (r *resourceManager) GetById(id any) (*models.Carrier, error) {
 	var result models.Carrier
 
 	if reflect.TypeOf(id).Kind() != reflect.String {
@@ -171,7 +176,7 @@ func (r *resourceManager) GetById(id interface{}) (*models.Carrier, error) {
 }
 
 // UpdateCarrier implements db.CarrierResourceManager.
-func (r *resourceManager) UpdateCarrier(id interface{}, carrier models.Carrier) error {
+func (r *resourceManager) UpdateCarrier(id any, carrier models.Carrier) error {
 	if reflect.TypeOf(id).Kind() != reflect.String {
 		return fmt.Errorf("cannot use typeof %s as id parameter", reflect.TypeOf(id).String())
 	}
@@ -190,7 +195,7 @@ func (r *resourceManager) UpdateCarrier(id interface{}, carrier models.Carrier) 
 	return err
 }
 
-func (r *resourceManager) AddIdentifier(id interface{}, identifier models.CarrierIdentifier) error {
+func (r *resourceManager) AddIdentifier(id any, identifier models.CarrierIdentifier) error {
 	if reflect.TypeOf(id).Kind() != reflect.String {
 		return fmt.Errorf("cannot use typeof %s as id parameter", reflect.TypeOf(id).String())
 	}
