@@ -7,11 +7,12 @@ require (
 	github.com/freightcms/carriers/db/mongodb v0.0.0-20250515175618-20ea3c516410
 	github.com/freightcms/carriers/web v0.0.0-20250430023538-5a9efc48c5d9
 	github.com/graphql-go/handler v0.2.4
+	github.com/labstack/echo/v4 v4.13.3
 	go.mongodb.org/mongo-driver v1.17.3
 )
 
 require (
-	github.com/freightcms/carriers/db v1.1.0 // indirect
+	github.com/freightcms/carriers/db v1.1.0
 	github.com/freightcms/carriers/models v0.0.0-20250515201019-999a2e521f36 // indirect
 	github.com/freightcms/common/models v1.1.0 // indirect
 	github.com/graphql-go/graphql v0.8.1 // indirect
@@ -27,7 +28,6 @@ require (
 	github.com/golang/snappy v1.0.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
-	github.com/labstack/echo/v4 v4.13.3 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
