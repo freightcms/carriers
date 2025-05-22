@@ -1,7 +1,13 @@
 package web
 
-import "github.com/labstack/echo/v4"
+import (
+	"github.com/freightcms/carriers/db"
+	"github.com/labstack/echo/v4"
+)
 
-type DbContext struct {
-	echo.Context
-}
+type (
+	AppContext struct {
+		echo.Context
+		db.DbContext
+	}
+)

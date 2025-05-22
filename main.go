@@ -9,27 +9,35 @@ import (
 	"os"
 
 	dotenv "github.com/dotenv-org/godotenvvault"
+	"github.com/freightcms/carriers/db"
 	"github.com/freightcms/carriers/db/mongodb"
+	"github.com/freightcms/carriers/web"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func addMongoDbMiddleware(client mongo.Client, h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// addMongoDbMiddleware adds the CarrierResourceManager to the echo context so that it can be
+// be recovered from the db.DbContext object
+func addMongoDbMiddleware(client *mongo.Client, next echo.HandlerFunc) echo.HandlerFunc {
+	return echo.HandlerFunc(func(c echo.Context) error {
 		session, err := client.StartSession()
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(err.Error()))
-			w.Header().Set("ContentType", "application/json")
-			return
+			return err
 		}
-		defer session.EndSession(r.Context())
+		requestContext := c.Request().Context()
+		defer session.EndSession(requestContext)
 
-		sessionContext := mongo.NewSessionContext(r.Context(), session)
-		personManagerContext := mongodb.WithContext(sessionContext)
-		ctx := r.WithContext(personManagerContext)
-		h.ServeHTTP(w, ctx)
+		sessionContext := mongo.NewSessionContext(requestContext, session)
+		dbContext := db.DbContext{
+			Context:                requestContext,
+			CarrierResourceManager: mongodb.NewCarrierManager(sessionContext),
+		}
+		wrappedContext := web.AppContext{
+			Context:   c,
+			DbContext: dbContext,
+		}
+		return next(wrappedContext)
 	})
 }
 
@@ -37,6 +45,20 @@ var (
 	port int
 	host string
 )
+
+func dbContextMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		// Code to execute before the handler
+		fmt.Println("Before handler")
+
+		// Call the next handler
+		err := next(c)
+
+		// Code to execute after the handler
+		fmt.Println("After handler")
+		return err
+	}
+}
 
 func main() {
 
@@ -68,6 +90,11 @@ func main() {
 	fmt.Println("Setting up handlers and routes")
 
 	server := echo.New()
+	server.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return addMongoDbMiddleware(client, next)
+	})
+
+	web.Register(server)
 
 	server.GET("/", echo.HandlerFunc(func(c echo.Context) error {
 		return c.JSONPretty(http.StatusOK, &struct {
@@ -76,7 +103,6 @@ func main() {
 			Status: "Ok",
 		}, "    ")
 	}))
-	addMongoDbMiddleware(server)
 	fmt.Println("Done")
 	hostname := fmt.Sprintf("%v:%d", host, port)
 	fmt.Printf("Start server at %s\n", hostname)

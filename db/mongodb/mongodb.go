@@ -2,7 +2,6 @@ package mongodb
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"reflect"
 	"slices"
@@ -14,13 +13,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-)
-
-type CarrierResourceManagerContextKey string
-
-const (
-	// ContextKey used to fetch or put the Carrier Resource Manager into the context
-	ContextKey CarrierResourceManagerContextKey = "carrierResourceManagerContextKey"
 )
 
 var (
@@ -96,26 +88,6 @@ func (r *resourceManager) Get(query *db.CarrierQuery) ([]*models.Carrier, int64,
 		return nil, 0, err
 	}
 	return results, count, nil
-}
-
-// WithContext fetches the mongo db session context from that passed argument (parent context)
-// ,appends the carrier manager and returns all with the new context.
-func WithContext(session mongo.SessionContext) context.Context {
-	if session == nil {
-		panic("Could not fetch session from context")
-	}
-	mgr := NewCarrierManager(session)
-	return context.WithValue(session, ContextKey, mgr)
-}
-
-// FromContext gets the Resource Manager from the context passsed.
-func FromContext(ctx context.Context) db.CarrierResourceManager {
-	val := ctx.Value(ContextKey)
-	if val == nil {
-		panic(errors.New("could not fetch CarrierResourceManager from context"))
-	}
-
-	return val.(*resourceManager)
 }
 
 // CreateCarrier implements db.CarrierResourceManager.

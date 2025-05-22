@@ -42,6 +42,14 @@ From the root of the application...
 
 1. Start Docker mongo database instance, and mongo express instance
 
+  - If you would rather run mongodb on your local machine instead of installing docker please see [install-mongodb-on-debian](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-debian/)
+  - Creating the user
+    1. Start the mongosh client by typing `mongosh`
+    2. connect to the admin database with `use admin`
+    3. Create a new user with `db.createUser({user: "root", pwd: "example", roles: [{role: "userAdminAnyDatabase", db: "admin"},{role: "readWriteAnyDatabase", db: "admin"}]})`
+    4. Switch to the freightcms db with `use freightmcs`
+    5. Create a new user with `db.createUser({user: "root", pwd: "example", roles: [{role: "userAdminAnyDatabase", db: "admin"},{role: "readWriteAnyDatabase", db: "admin"}]})`
+
 ```sh
 docker compose up -d
 ```
