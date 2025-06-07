@@ -8,10 +8,11 @@ import (
 	"net/http"
 	"os"
 
-	dotenv "github.com/dotenv-org/godotenvvault"
 	"github.com/freightcms/carriers/db"
 	"github.com/freightcms/carriers/db/mongodb"
 	"github.com/freightcms/carriers/web"
+	"github.com/freightcms/logging"
+	dotenv "github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -42,33 +43,21 @@ func addMongoDbMiddleware(client *mongo.Client, next echo.HandlerFunc) echo.Hand
 }
 
 var (
-	port int
-	host string
+	port   int
+	host   string
+	logger = logging.New(os.Stdout, logging.LogLevels())
 )
-
-func dbContextMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		// Code to execute before the handler
-		fmt.Println("Before handler")
-
-		// Call the next handler
-		err := next(c)
-
-		// Code to execute after the handler
-		fmt.Println("After handler")
-		return err
-	}
-}
 
 func main() {
 
 	flag.IntVar(&port, "p", 8080, "Port to run application on")
 	flag.StringVar(&host, "h", "0.0.0.0", "Host address to run application on")
+
 	ctx := context.Background()
 	fmt.Println("Starting application...")
 
 	if err := dotenv.Load(".env"); err != nil {
-		log.Fatal(err)
+		logger.Warning("no \".env\" file found")
 		return
 	}
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
