@@ -109,8 +109,8 @@ func main() {
 	flag.IntVar(&port, "p", 8080, "Port to run application on")
 	flag.StringVar(&host, "h", "0.0.0.0", "Host address to run application on")
 	flag.StringVar(&dbName, "database", "freightcms", "Name of the database to use when connecting. Defaults to freightcms")
-	flag.StringVar(&collectionName, "collection", "people", "Name of the collection in mongodb to use when connecting. Defaults to 'people'")
-	flag.StringVar(&allowedHosts, "allowedHosts", "localhost:8080", "Comma separated list of hostname that are allowed to communicate with service")
+	flag.StringVar(&collectionName, "collection", "carriers", "Name of the collection in mongodb to use when connecting. Defaults to 'carriers'")
+	flag.StringVar(&allowedHosts, "allowedHosts", "localhost", "Comma separated list of hostname that are allowed to communicate with service")
 
 	ctx := context.Background()
 
