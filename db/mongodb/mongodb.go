@@ -178,7 +178,7 @@ func (r *resourceManager) AddIdentifier(id any, identifier models.CarrierIdentif
 	}
 
 	filter := bson.D{
-		{"_id", objectId},
+		{Key: "_id", Value: objectId},
 	}
 	update := bson.D{
 		//bson.D{{"$addFields", bson.D{{
